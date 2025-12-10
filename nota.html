@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoPremium - Nota Fiscal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="stylesheet" href="nota.css">
+
+</head>
+<body>
+  <div class="nota-container fade-in">
+    <div class="nota-header">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h1>Compra Realizada com Sucesso!</h1>
+      <p>Obrigado por escolher a AutoPremium</p>
+    </div>
+    
+    <div class="compra-info">
+      <!-- Número do pedido -->
+      <div class="pedido-number fade-in">
+        <h3><i class="fas fa-receipt"></i> Número do Pedido</h3>
+        <p id="numeroPedido">AP-2023-0001</p>
+      </div>
+      
+      <!-- Informações do cliente -->
+      <div class="info-grid">
+        <div class="info-card fade-in">
+          <h3><i class="fas fa-user"></i> Dados do Cliente</h3>
+          <div class="info-item">
+            <span class="info-label">Nome:</span>
+            <span class="info-value" id="nome">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">E-mail:</span>
+            <span class="info-value" id="email">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Telefone:</span>
+            <span class="info-value" id="telefone">-</span>
+          </div>
+        </div>
+        
+        <div class="info-card fade-in">
+          <h3><i class="fas fa-credit-card"></i> Informações de Pagamento</h3>
+          <div class="info-item">
+            <span class="info-label">Forma de Pagamento:</span>
+            <span class="info-value" id="pagamento">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-value highlight">Pagamento Aprovado</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Data da Compra:</span>
+            <span class="info-value" id="dataCompra">-</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Detalhes do carro -->
+      <div class="carro-detalhes fade-in">
+        <div class="carro-icon">
+          <i class="fas fa-car"></i>
+        </div>
+        <div class="carro-info">
+          <h3 id="carro">Carro Selecionado</h3>
+          <div class="carro-preco" id="preco">Preço não informado</div>
+          <p><strong>Ano:</strong> <span id="ano">-</span></p>
+        </div>
+      </div>
+      
+      <!-- Informações adicionais -->
+      <div class="additional-info fade-in">
+        <h3><i class="fas fa-info-circle"></i> Próximos Passos</h3>
+        <p>Sua compra foi processada com sucesso! Nossa equipe entrará em contato em até 24 horas para combinar os detalhes da entrega.</p>
+        
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div class="timeline-content">
+              <h4>Contato da Equipe</h4>
+              <p>Nossa equipe entrará em contato para confirmar os detalhes</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="timeline-content">
+              <h4>Agendamento da Entrega</h4>
+              <p>Vamos combinar a data e local de entrega do veículo</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-car-side"></i>
+            </div>
+            <div class="timeline-content">
+              <h4>Retirada do Veículo</h4>
+              <p>Você receberá seu novo carro com toda documentação</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Ações -->
+    <div class="nota-actions">
+      <button class="btn btn-primary" onclick="imprimirNota()">
+        <i class="fas fa-print"></i> Imprimir Nota
+      </button>
+      <button class="btn btn-success" onclick="enviarEmail()">
+        <i class="fas fa-envelope"></i> Enviar por E-mail
+      </button>
+      <button class="btn btn-secondary" onclick="voltarInicio()">
+        <i class="fas fa-home"></i> Voltar ao Início
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Obter parâmetros da URL
+    const params = new URLSearchParams(window.location.search);
+    
+    // Preencher dados da nota fiscal
+    document.getElementById("nome").textContent = params.get("nome") || "Não informado";
+    document.getElementById("email").textContent = params.get("email") || "Não informado";
+    document.getElementById("telefone").textContent = params.get("telefone") || "Não informado";
+    document.getElementById("carro").textContent = params.get("carro") || "Não selecionado";
+    document.getElementById("pagamento").textContent = params.get("pagamento") || "Não selecionado";
+    document.getElementById("preco").textContent = params.get("preco") || "Preço não informado";
+    document.getElementById("ano").textContent = params.get("ano") || "Ano não informado";
+    
+    // Gerar data atual
+    const dataAtual = new Date();
+    const dataFormatada = dataAtual.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    document.getElementById("dataCompra").textContent = dataFormatada;
+    
+    // Gerar número de pedido aleatório
+    function gerarNumeroPedido() {
+      const prefixo = "AP";
+      const ano = new Date().getFullYear();
+      const numero = Math.floor(1000 + Math.random() * 9000);
+      return `${prefixo}-${ano}-${numero}`;
+    }
+    
+    document.getElementById("numeroPedido").textContent = gerarNumeroPedido();
+    
+    // Função para imprimir a nota
+    function imprimirNota() {
+      window.print();
+    }
+    
+    // Função para simular envio por e-mail
+    function enviarEmail() {
+      const btn = document.querySelector('.btn-success');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-check"></i> Enviado!';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          alert('Nota fiscal enviada para o e-mail cadastrado!');
+        }, 1000);
+      }, 2000);
+    }
+    
+    // Função para voltar ao início
+    function voltarInicio() {
+      window.location.href = 'hh.html';
+    }
+    
+    // Adicionar efeitos de confete (celebração)
+    document.addEventListener('DOMContentLoaded', function() {
+      // Simular efeito de confete após carregamento
+      setTimeout(() => {
+        criarConfete();
+      }, 1000);
+    });
+    
+    function criarConfete() {
+      const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6'];
+      const confeteCount = 50;
+      
+      for (let i = 0; i < confeteCount; i++) {
+        const confete = document.createElement('div');
+        confete.style.position = 'fixed';
+        confete.style.width = '10px';
+        confete.style.height = '10px';
+        confete.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confete.style.borderRadius = '50%';
+        confete.style.top = '0';
+        confete.style.left = Math.random() * 100 + 'vw';
+        confete.style.opacity = '0.8';
+        confete.style.zIndex = '9999';
+        confete.style.pointerEvents = 'none';
+        
+        document.body.appendChild(confete);
+        
+        // Animação do confete
+        const animation = confete.animate([
+          { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+          { transform: `translateY(${window.innerHeight}px) rotate(${360 + Math.random() * 360}deg)`, opacity: 0 }
+        ], {
+          duration: 2000 + Math.random() * 2000,
+          easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+        });
+        
+        animation.onfinish = () => {
+          confete.remove();
+        };
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoPremium</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <script>
+        // Redirecionar para a página principal
+        window.location.href = './hh.html';
+        
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #141e30, #243b55); color: white;">
+        <h1>Redirecionando para AutoPremium...</h1>
+    </div>
+</body>
+</html>

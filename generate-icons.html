@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerar Ícones AutoPremium</title>
+</head>
+<body>
+    <canvas id="canvas" width="512" height="512" style="border: 1px solid #ccc;"></canvas>
+    <div style="margin-top: 20px;">
+        <button onclick="generateIcons()">Gerar Ícones PWA</button>
+    </div>
+
+    <script>
+        function generateIcons() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+            
+            sizes.forEach(size => {
+                // Configurar canvas para o tamanho atual
+                canvas.width = size;
+                canvas.height = size;
+                
+                // Fundo gradiente
+                const gradient = ctx.createLinearGradient(0, 0, size, size);
+                gradient.addColorStop(0, '#3498db');
+                gradient.addColorStop(1, '#2980b9');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, size, size);
+                
+                // Ícone do carro
+                ctx.fillStyle = 'white';
+                const fontSize = size * 0.4;
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🚗', size/2, size/2);
+                
+                // Download
+                const link = document.createElement('a');
+                link.download = `icon-${size}x${size}.png`;
+                link.href = canvas.toDataURL();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            alert('Todos os ícones foram gerados!');
+        }
+        
+        // Gerar automaticamente ao carregar
+        window.onload = generateIcons;
+    </script>
+</body>
+</html>

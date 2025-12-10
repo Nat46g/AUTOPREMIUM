@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoPremium - Catálogo de Carros Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="car.css">
+</head>
+<body>
+    <header class="fade-in">
+        <h1>AutoPremium</h1>
+        <p>Descubra nossa seleção exclusiva de veículos premium</p>
+    </header>
+
+    <div class="container">
+        <!-- Filtros Avançados -->
+        <section class="filters-section fade-in">
+            <div class="filters-header">
+                <h2><i class="fas fa-sliders-h"></i> Filtros Avançados</h2>
+                <button id="clearFilters" class="clear-filters-btn">
+                    <i class="fas fa-times"></i> Limpar Filtros
+                </button>
+            </div>
+            
+            <div class="filters-grid">
+                <!-- Filtro por Marca -->
+                <div class="filter-group">
+                    <label for="marcaFilter"><i class="fas fa-car"></i> Marca</label>
+                    <select id="marcaFilter" class="filter-select">
+                        <option value="">Todas as Marcas</option>
+                        <option value="fiat">Fiat</option>
+                        <option value="ford">Ford</option>
+                        <option value="honda">Honda</option>
+                        <option value="toyota">Toyota</option>
+                        <option value="chevrolet">Chevrolet</option>
+                        <option value="volkswagen">Volkswagen</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Preço -->
+                <div class="filter-group">
+                    <label for="precoFilter"><i class="fas fa-tag"></i> Faixa de Preço</label>
+                    <select id="precoFilter" class="filter-select">
+                        <option value="">Todos os Preços</option>
+                        <option value="0-80000">Até R$ 80.000</option>
+                        <option value="80000-150000">R$ 80.000 - R$ 150.000</option>
+                        <option value="150000-250000">R$ 150.000 - R$ 250.000</option>
+                        <option value="250000-500000">R$ 250.000 - R$ 500.000</option>
+                        <option value="500000+">Acima de R$ 500.000</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Ano -->
+                <div class="filter-group">
+                    <label for="anoFilter"><i class="fas fa-calendar-alt"></i> Ano</label>
+                    <select id="anoFilter" class="filter-select">
+                        <option value="">Todos os Anos</option>
+                        <option value="2023-2024">2023-2024</option>
+                        <option value="2021-2022">2021-2022</option>
+                        <option value="2019-2020">2019-2020</option>
+                        <option value="2017-2018">2017-2018</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Tipo -->
+                <div class="filter-group">
+                    <label for="tipoFilter"><i class="fas fa-car-side"></i> Tipo de Veículo</label>
+                    <select id="tipoFilter" class="filter-select">
+                        <option value="">Todos os Tipos</option>
+                        <option value="hatch">Hatch</option>
+                        <option value="sedan">Sedan</option>
+                        <option value="suv">SUV</option>
+                        <option value="pickup">Pick-up</option>
+                        <option value="esportivo">Esportivo</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Estatísticas -->
+        <div class="stats-bar fade-in">
+            <div class="stat-item">
+                <i class="fas fa-car"></i>
+                <span id="totalCarros">24</span>
+                <small>Veículos Disponíveis</small>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-check-circle"></i>
+                <span>100%</span>
+                <small>Verificados</small>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>12</span>
+                <small>Meses Garantia</small>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-star"></i>
+                <span>4.9</span>
+                <small>Avaliação</small>
+            </div>
+        </div>
+
+        <!-- Catálogo de Carros -->
+        <div class="catalogo-header">
+            <h2>Nossa Seleção Premium</h2>
+            <div class="sort-options">
+                <select id="sortSelect" class="sort-select">
+                    <option value="nome">Ordenar por: Nome</option>
+                    <option value="preco-asc">Preço: Menor para Maior</option>
+                    <option value="preco-desc">Preço: Maior para Menor</option>
+                    <option value="ano-desc">Ano: Mais Recente</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="catalogo" class="catalogo">
+            <!-- Os carros serão inseridos aqui via JavaScript -->
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading-state" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Carregando veículos...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>Nenhum veículo encontrado</h3>
+            <p>Tente ajustar os filtros para ver mais resultados</p>
+            <button id="resetFilters" class="btn btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-redo"></i> Limpar Filtros
+            </button>
+        </div>
+    </div>
+
+    <footer class="fade-in">
+        <p>Entre em contato conosco:</p>
+        <div class="contact-info">
+            <div class="contact-item">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp: (31) 9 8492-4415</span>
+            </div>
+            <div class="contact-item">
+                <i class="fab fa-instagram"></i>
+                <span>Instagram: @Natanael46gelan</span>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>Email: natanaellucasmiranda@gmail.com</span>
+            </div>
+        </div>
+        <p style="margin-top: 1.5rem;">&copy; 2025 Natanael Lucas - Todos os direitos reservados</p>
+    </footer>
+
+    <script>
+        // Catálogo expandido e mais profissional
+        const catalogos = {
+            fiat: [
+                { 
+                    id: 1,
+                    nome: "Fiat Argo Drive 1.3", 
+                    img: "https://blog.deltafiat.com.br/wp-content/uploads/2023/11/fiat-argo-2024.jpg",
+                    preco: 75900, 
+                    ano: "2023/2024",
+                    tipo: "hatch",
+                    km: "15.000",
+                    combustivel: "Flex",
+                    cambio: "Manual",
+                    cor: "Branco",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "fiat"
+                },
+                { 
+                    id: 2,
+                    nome: "Fiat Cronos Precision 1.3", 
+                    img: "https://tse3.mm.bing.net/th/id/OIP.j-3wNIIm1nBfmsMqnFIiHQHaE8?rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 84900, 
+                    ano: "2023/2024",
+                    tipo: "sedan",
+                    km: "12.000",
+                    combustivel: "Flex",
+                    cambio: "Automático",
+                    cor: "Prata",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "fiat"
+                },
+                { 
+                    id: 3,
+                    nome: "Fiat Toro Volcano 2.0", 
+                    img: "https://tse2.mm.bing.net/th/id/OIP.U6t904yfkC1bqxZwY2THtwHaEo?rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 149900, 
+                    ano: "2023/2024",
+                    tipo: "pickup",
+                    km: "8.000",
+                    combustivel: "Diesel",
+                    cambio: "Automático",
+                    cor: "Vermelho",
+                    destaque: false,
+                    garantia: "12 meses",
+                    marca: "fiat"
+                }
+            ],
+            ford: [
+                { 
+                    id: 4,
+                    nome: "Ford Ranger XLT 2.2", 
+                    img: "https://vehicle-images.dealerinspire.com/4758-110008754/1FTER4HH1RLE33383/ea39bde8a4e1ee2ed99af5ec3bd55188.jpg",
+                    preco: 219900, 
+                    ano: "2023/2024",
+                    tipo: "pickup",
+                    km: "8.000",
+                    combustivel: "Diesel",
+                    cambio: "Automático",
+                    cor: "Preto",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "ford"
+                },
+                { 
+                    id: 5,
+                    nome: "Ford Mustang GT 5.0", 
+                    img: "https://tse3.mm.bing.net/th/id/OIP.hq3yFdT0qi-R2N3uLl4kmgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 489900, 
+                    ano: "2023/2024",
+                    tipo: "esportivo",
+                    km: "5.000",
+                    combustivel: "Gasolina",
+                    cambio: "Automático",
+                    cor: "Azul",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "ford"
+                }
+            ],
+            honda: [
+                { 
+                    id: 6,
+                    nome: "Honda Civic Touring 1.5", 
+                    img: "https://tse4.mm.bing.net/th/id/OIP.TXUjzpBgT8LBd5OXl15TEAHaDt?rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 179900, 
+                    ano: "2023/2024",
+                    tipo: "sedan",
+                    km: "10.000",
+                    combustivel: "Flex",
+                    cambio: "Automático",
+                    cor: "Cinza",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "honda"
+                },
+                { 
+                    id: 7,
+                    nome: "Honda HR-V EXL 1.8", 
+                    img: "https://tse4.mm.bing.net/th/id/OIP._n5ymWXA_rDd_-SiTHEt5wHaFj?w=1920&h=1440&rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 159900, 
+                    ano: "2023/2024",
+                    tipo: "suv",
+                    km: "12.000",
+                    combustivel: "Flex",
+                    cambio: "Automático",
+                    cor: "Branco",
+                    destaque: false,
+                    garantia: "12 meses",
+                    marca: "honda"
+                }
+            ],
+            toyota: [
+                { 
+                    id: 8,
+                    nome: "Toyota Corolla Altis Hybrid", 
+                    img: "https://tse4.mm.bing.net/th/id/OIP.2f_ZHtOtRTsXveySiR8tdAHaEu?w=690&h=440&rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 189900, 
+                    ano: "2023/2024",
+                    tipo: "sedan",
+                    km: "7.000",
+                    combustivel: "Flex",
+                    cambio: "Automático",
+                    cor: "Prata",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "toyota"
+                },
+                { 
+                    id: 9,
+                    nome: "Toyota Hilux SRX 2.8", 
+                    img: "https://www.autocerto.com/fotos/1853/732004/20.jpg",
+                    preco: 249900, 
+                    ano: "2023/2024",
+                    tipo: "pickup",
+                    km: "9.000",
+                    combustivel: "Diesel",
+                    cambio: "Automático",
+                    cor: "Branco",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "toyota"
+                }
+            ],
+            chevrolet: [
+                { 
+                    id: 10,
+                    nome: "Chevrolet Onix Plus Premier", 
+                    img: "https://tse4.mm.bing.net/th/id/OIP.0K2K_gq1RcrjVIkxakcCBQHaEo?w=900&h=563&rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 89900, 
+                    ano: "2023/2024",
+                    tipo: "sedan",
+                    km: "11.000",
+                    combustivel: "Flex",
+                    cambio: "Automático",
+                    cor: "Preto",
+                    destaque: false,
+                    garantia: "12 meses",
+                    marca: "chevrolet"
+                },
+                { 
+                    id: 11,
+                    nome: "Chevrolet Tracker Premier 1.2", 
+                    img: "https://http2.mlstatic.com/D_NQ_NP_666838-MLB77656274890_072024-O.webp",
+                    preco: 139900, 
+                    ano: "2023/2024",
+                    tipo: "suv",
+                    km: "8.000",
+                    combustivel: "Flex",
+                    cambio: "Automático",
+                    cor: "Vermelho",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "chevrolet"
+                }
+            ],
+            volkswagen: [
+                { 
+                    id: 12,
+                    nome: "Volkswagen T-Cross Highline", 
+                    img: "https://tse3.mm.bing.net/th/id/OIP.QKy_GyvMk81CyVDVOZ7g6AHaEk?w=1024&h=631&rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 134900, 
+                    ano: "2023/2024",
+                    tipo: "suv",
+                    km: "6.000",
+                    combustivel: "Flex",
+                    cambio: "Automático",
+                    cor: "Azul",
+                    destaque: true,
+                    garantia: "12 meses",
+                    marca: "volkswagen"
+                },
+                { 
+                    id: 13,
+                    nome: "Volkswagen Polo GTS", 
+                    img: "https://tse1.mm.bing.net/th/id/OIP.YGRePQJmju7kAfVo0N8dSgHaDe?w=1024&h=480&rs=1&pid=ImgDetMain&o=7&rm=3",
+                    preco: 112900, 
+                    ano: "2023/2024",
+                    tipo: "hatch",
+                    km: "5.000",
+                    combustivel: "Flex",
+                    cambio: "Automático",
+                    cor: "Cinza",
+                    destaque: false,
+                    garantia: "12 meses",
+                    marca: "volkswagen"
+                }
+            ]
+        };
+
+        // Array com todos os carros
+        let todosCarros = [];
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Popular array com todos os carros
+            Object.values(catalogos).forEach(carros => {
+                todosCarros = todosCarros.concat(carros);
+            });
+            
+            // Atualizar contador
+            document.getElementById('totalCarros').textContent = todosCarros.length;
+            
+            // Inicializar catálogo
+            inicializarCatalogo();
+            
+            // Configurar event listeners
+            configurarEventListeners();
+            
+            // Mostrar todos os carros inicialmente
+            exibirCarros(todosCarros);
+        });
+
+        function inicializarCatalogo() {
+            const catalogoDiv = document.getElementById("catalogo");
+            catalogoDiv.innerHTML = '';
+        }
+
+        function configurarEventListeners() {
+            // Filtros
+            document.getElementById('marcaFilter').addEventListener('change', filtrarCarros);
+            document.getElementById('precoFilter').addEventListener('change', filtrarCarros);
+            document.getElementById('anoFilter').addEventListener('change', filtrarCarros);
+            document.getElementById('tipoFilter').addEventListener('change', filtrarCarros);
+            
+            // Ordenação
+            document.getElementById('sortSelect').addEventListener('change', ordenarCarros);
+            
+            // Limpar filtros
+            document.getElementById('clearFilters').addEventListener('click', limparFiltros);
+            document.getElementById('resetFilters').addEventListener('click', limparFiltros);
+        }
+
+        function filtrarCarros() {
+            const marca = document.getElementById('marcaFilter').value;
+            const preco = document.getElementById('precoFilter').value;
+            const ano = document.getElementById('anoFilter').value;
+            const tipo = document.getElementById('tipoFilter').value;
+            
+            let carrosFiltrados = todosCarros.filter(carro => {
+                // Filtro por marca
+                if (marca && carro.marca !== marca) return false;
+                
+                // Filtro por preço
+                if (preco) {
+                    const [min, max] = preco.split('-');
+                    if (max === '+') {
+                        if (carro.preco < parseInt(min)) return false;
+                    } else {
+                        if (carro.preco < parseInt(min) || carro.preco > parseInt(max)) return false;
+                    }
+                }
+                
+                // Filtro por ano
+                if (ano && carro.ano !== ano) return false;
+                
+                // Filtro por tipo
+                if (tipo && carro.tipo !== tipo) return false;
+                
+                return true;
+            });
+            
+            // Aplicar ordenação atual
+            const ordenacao = document.getElementById('sortSelect').value;
+            carrosFiltrados = ordenarCarrosArray(carrosFiltrados, ordenacao);
+            
+            exibirCarros(carrosFiltrados);
+        }
+
+        function ordenarCarros() {
+            const ordenacao = document.getElementById('sortSelect').value;
+            const carrosAtuais = getCarrosVisiveis();
+            const carrosOrdenados = ordenarCarrosArray(carrosAtuais, ordenacao);
+            exibirCarros(carrosOrdenados);
+        }
+
+        function ordenarCarrosArray(carros, ordenacao) {
+            return carros.sort((a, b) => {
+                switch (ordenacao) {
+                    case 'preco-asc':
+                        return a.preco - b.preco;
+                    case 'preco-desc':
+                        return b.preco - a.preco;
+                    case 'ano-desc':
+                        return b.ano.localeCompare(a.ano);
+                    default:
+                        return a.nome.localeCompare(b.nome);
+                }
+            });
+        }
+
+        function getCarrosVisiveis() {
+            const cards = document.querySelectorAll('.card');
+            const carrosVisiveis = [];
+            
+            cards.forEach(card => {
+                const carroId = parseInt(card.dataset.carroId);
+                const carro = todosCarros.find(c => c.id === carroId);
+                if (carro) carrosVisiveis.push(carro);
+            });
+            
+            return carrosVisiveis;
+        }
+
+        function limparFiltros() {
+            document.getElementById('marcaFilter').value = '';
+            document.getElementById('precoFilter').value = '';
+            document.getElementById('anoFilter').value = '';
+            document.getElementById('tipoFilter').value = '';
+            document.getElementById('sortSelect').value = 'nome';
+            
+            exibirCarros(todosCarros);
+        }
+
+        function exibirCarros(carros) {
+            const catalogoDiv = document.getElementById("catalogo");
+            const loadingDiv = document.getElementById("loading");
+            const emptyDiv = document.getElementById("emptyState");
+            
+            // Mostrar loading
+            loadingDiv.style.display = 'block';
+            catalogoDiv.style.display = 'none';
+            emptyDiv.style.display = 'none';
+            
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+                
+                if (carros.length === 0) {
+                    emptyDiv.style.display = 'block';
+                    catalogoDiv.style.display = 'none';
+                    return;
+                }
+                
+                catalogoDiv.style.display = 'grid';
+                catalogoDiv.innerHTML = carros.map(carro => criarCardCarro(carro)).join("");
+            }, 500);
+        }
+
+        function criarCardCarro(carro) {
+            const precoFormatado = formatarPreco(carro.preco);
+            const classeDestaque = carro.destaque ? 'featured' : '';
+            
+            return `
+                <div class="card ${classeDestaque} fade-in" data-carro-id="${carro.id}">
+                    <div class="card-img-container">
+                        <img src="${carro.img}" alt="${carro.nome}" class="card-img">
+                        <div class="card-badge">
+                            <i class="fas fa-shield-alt"></i> ${carro.garantia}
+                        </div>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3>${carro.nome}</h3>
+                            <div class="card-price">${precoFormatado}</div>
+                        </div>
+                        
+                        <div class="card-specs">
+                            <div class="spec-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>${carro.ano}</span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>${carro.km} km</span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>${carro.combustivel}</span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-cog"></i>
+                                <span>${carro.cambio}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-features">
+                            <span class="feature-tag">${carro.tipo.toUpperCase()}</span>
+                            <span class="feature-tag">${carro.cor}</span>
+                            <span class="feature-tag">${carro.marca.toUpperCase()}</span>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button class="btn btn-primary" onclick="comprarCarro(${carro.id})">
+                                <i class="fas fa-shopping-cart"></i> Comprar
+                            </button>
+                            <button class="btn btn-secondary" onclick="detalhesCarro(${carro.id})">
+                                <i class="fas fa-info-circle"></i> Detalhes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatarPreco(preco) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(preco);
+        }
+
+        // Funções para os botões
+        function comprarCarro(carroId) {
+            const carro = todosCarros.find(c => c.id === carroId);
+            if (carro && confirm(`Deseja comprar o ${carro.nome} por ${formatarPreco(carro.preco)}?`)) {
+                window.location.href = `compra.html?carro=${encodeURIComponent(carro.nome)}&preco=${encodeURIComponent(formatarPreco(carro.preco))}&ano=${encodeURIComponent(carro.ano)}`;
+            }
+        }
+
+        function detalhesCarro(carroId) {
+            const carro = todosCarros.find(c => c.id === carroId);
+            if (carro) {
+                const detalhes = `
+Detalhes do ${carro.nome}:
+
+• Preço: ${formatarPreco(carro.preco)}
+• Ano: ${carro.ano}
+• Quilometragem: ${carro.km}
+• Combustível: ${carro.combustivel}
+• Câmbio: ${carro.cambio}
+• Cor: ${carro.cor}
+• Tipo: ${carro.tipo}
+• Garantia: ${carro.garantia}
+
+Entre em contato para mais informações!
+                `;
+                alert(detalhes);
+            }
+        }
+    </script>
+</body>
+</html>
