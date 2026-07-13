@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoPremium - Catálogo</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Mesmos estilos do catálogo anterior, mantenha o mesmo CSS */
+    .filters-section {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-group label {
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 10px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: var(--transition);
+      color: #1a1a1a;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-item {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      color: #1a1a1a;
+    }
+
+    .stat-item i {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    .stat-item span {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .stat-item small {
+      color: #555;
+    }
+
+    .catalogo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .catalogo-header h2 {
+      color: white;
+      font-size: 2rem;
+    }
+
+    .catalogo {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .card-img-container {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .card:hover .card-img {
+      transform: scale(1.05);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(52, 152, 219, 0.9);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .card-header h3 {
+      color: #1a1a1a;
+      font-size: 1.3rem;
+      margin: 0;
+    }
+
+    .card-price {
+      color: var(--danger);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .card-specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .spec-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #1a1a1a;
+    }
+
+    .spec-item i {
+      color: var(--primary);
+      width: 16px;
+    }
+
+    .card-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .feature-tag {
+      background: #f0f0f0;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      color: #1a1a1a;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .card-actions .btn {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+
+    .loading-state,
+    .empty-state {
+      text-align: center;
+      padding: 4rem;
+      background: white;
+      border-radius: var(--border-radius);
+      grid-column: 1 / -1;
+      color: #1a1a1a;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 2rem 0;
+    }
+
+    .pagination button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      transition: var(--transition);
+      color: #1a1a1a;
+    }
+
+    .pagination button.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    #resultCount {
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .catalogo {
+        grid-template-columns: 1fr;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="hero" style="padding: 2rem 1rem;">
+    <h1 style="font-size: 2.5rem;">AutoPremium</h1>
+    <p>Descubra nossa seleção exclusiva</p>
+  </header>
+
+  <div class="container">
+    <!-- Filtros -->
+    <section class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label for="searchText"><i class="fas fa-search"></i> Buscar</label>
+          <input type="text" id="searchText" placeholder="Digite modelo, marca..." />
+        </div>
+        <div class="filter-group">
+          <label for="marcaFilter"><i class="fas fa-car"></i> Marca</label>
+          <select id="marcaFilter">
+            <option value="">Todas</option>
+            <option value="fiat">Fiat</option>
+            <option value="ford">Ford</option>
+            <option value="honda">Honda</option>
+            <option value="toyota">Toyota</option>
+            <option value="chevrolet">Chevrolet</option>
+            <option value="volkswagen">Volkswagen</option>
+            <option value="bmw">BMW</option>
+            <option value="mercedes">Mercedes-Benz</option>
+            <option value="audi">Audi</option>
+            <option value="jeep">Jeep</option>
+            <option value="renault">Renault</option>
+            <option value="hyundai">Hyundai</option>
+            <option value="nissan">Nissan</option>
+            <option value="kia">Kia</option>
+            <option value="peugeot">Peugeot</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="precoMin"><i class="fas fa-tag"></i> Preço mínimo</label>
+          <input type="number" id="precoMin" placeholder="0" min="0" />
+        </div>
+        <div class="filter-group">
+          <label for="precoMax">Preço máximo</label>
+          <input type="number" id="precoMax" placeholder="999999" min="0" />
+        </div>
+        <div class="filter-group">
+          <label for="tipoFilter"><i class="fas fa-car-side"></i> Tipo</label>
+          <select id="tipoFilter">
+            <option value="">Todos</option>
+            <option value="hatch">Hatch</option>
+            <option value="sedan">Sedan</option>
+            <option value="suv">SUV</option>
+            <option value="pickup">Pick-up</option>
+            <option value="esportivo">Esportivo</option>
+            <option value="crossover">Crossover</option>
+            <option value="luxo">Luxo</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="sortSelect"><i class="fas fa-sort"></i> Ordenar</label>
+          <select id="sortSelect">
+            <option value="nome">Nome (A-Z)</option>
+            <option value="preco-asc">Preço: menor</option>
+            <option value="preco-desc">Preço: maior</option>
+            <option value="ano-desc">Ano: mais recente</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-primary" id="applyFilters"><i class="fas fa-filter"></i> Aplicar Filtros</button>
+        <button class="btn btn-secondary" id="clearFilters"><i class="fas fa-times"></i> Limpar</button>
+        <span id="resultCount" style="margin-left: auto; font-weight: 600;"></span>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-item"><i class="fas fa-car"></i><span id="totalCarros">0</span><small>Veículos</small></div>
+      <div class="stat-item"><i class="fas fa-check-circle"></i><span>100%</span><small>Verificados</small></div>
+      <div class="stat-item"><i class="fas fa-shield-alt"></i><span>12</span><small>Meses Garantia</small></div>
+      <div class="stat-item"><i class="fas fa-star"></i><span>4.9</span><small>Avaliação</small></div>
+    </div>
+
+    <!-- Catálogo -->
+    <div class="catalogo-header">
+      <h2>Nossa Seleção Premium</h2>
+    </div>
+    <div id="catalogo" class="catalogo"></div>
+    <div id="loading" class="loading-state" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p>Carregando veículos...</p>
+    </div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <i class="fas fa-search" style="font-size: 4rem; color: #bdc3c7;"></i>
+      <h3>Nenhum veículo encontrado</h3>
+      <p>Tente ajustar os filtros</p>
+      <button class="btn btn-primary" id="resetFilters"><i class="fas fa-redo"></i> Limpar Filtros</button>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+  <footer>
+
+    <p>Entre em contato:</p>
+    <div class="contact-info">
+      <a href="https://wa.me/5531984924415" class="contact-item"><i class="fab fa-whatsapp"></i> (31) 9 8492-4415</a>
+      <a href="https://instagram.com/Natanael46gelan" class="contact-item"><i class="fab fa-instagram"></i>
+        @Natanael46gelan</a>
+      <a href="mailto:natanaellucasmiranda@gmail.com" class="contact-item"><i class="fas fa-envelope"></i>
+        natanaellucasmiranda@gmail.com</a>
+    </div>
+    <div class="footer-logo">
+      <img src="imag/Devlops.png" alt="Technatt Devlops" />
+    </div>
+    <p class="copyright">&copy; 2025 TechNatt</p>
+  </footer>
+
+  <script>
+    // ===================== CATÁLOGO EXPANDIDO =====================
+    const catalogos = {
+      fiat: [
+        { id: 1, nome: "Fiat Argo Drive 1.3", img: "https://tse2.mm.bing.net/th/id/OIP.g6hVSj3NvPak434fWwCuggHaEC?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 75900, ano: "2023/2024", tipo: "hatch", km: "15.000", combustivel: "Flex", cambio: "Manual", cor: "Branco", destaque: true, garantia: "12 meses", marca: "fiat" },
+        { id: 2, nome: "Fiat Cronos Precision 1.3", img: "https://tse3.mm.bing.net/th/id/OIP.YzbyL9qkocNiSREdN1IGnAAAAA?r=0&w=474&h=355&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 84900, ano: "2023/2024", tipo: "sedan", km: "12.000", combustivel: "Flex", cambio: "Automático", cor: "Prata", destaque: true, garantia: "12 meses", marca: "fiat" },
+        { id: 3, nome: "Fiat Toro Volcano 2.0", img: "https://resized-images.autoconf.com.br/1000x750/filters:format(jpg)/veiculos/fotos/360364/05303fb8-9315-4892-a017-553eeb722101.jpg", preco: 149900, ano: "2023/2024", tipo: "pickup", km: "8.000", combustivel: "Diesel", cambio: "Automático", cor: "Vermelho", destaque: false, garantia: "12 meses", marca: "fiat" },
+        { id: 14, nome: "Fiat Pulse Abarth 1.3", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgFSGRpEZQm9Ym_mxV3y2NAPBCpk_mxDKGwUABVVbB7X9P0TbGIzn_oiO1euppE8hxKzStN66termspESiF4DZ6O4Ni51lPw64ak0DgzqFuHSM2_sCPsBzOkf26Lutj4rlXZTjc6k-5jAkpDZwgmSW1HXAhBizOKONPTTZdNH2xu80g9OQg-e951dML3hpN/s2560/Novo-Pulse-Abarth-2026%20(21).jpg", preco: 139900, ano: "2023/2024", tipo: "suv", km: "5.000", combustivel: "Flex", cambio: "Automático", cor: "Preto", destaque: true, garantia: "12 meses", marca: "fiat" },
+        { id: 15, nome: "Fiat Strada Ranch 1.3", img: "https://tse4.mm.bing.net/th/id/OIP.xEzzXLHkCYpobRcNKTykNQHaEK?r=0&w=1920&h=1080&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 109900, ano: "2023/2024", tipo: "pickup", km: "10.000", combustivel: "Flex", cambio: "Manual", cor: "Cinza", destaque: false, garantia: "12 meses", marca: "fiat" }
+      ],
+      ford: [
+        { id: 4, nome: "Ford Ranger XLT 2.2", img: "https://tse3.mm.bing.net/th/id/OIP.66jpv-DvvvPU4keCEhMulgHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 219900, ano: "2023/2024", tipo: "pickup", km: "8.000", combustivel: "Diesel", cambio: "Automático", cor: "Preto", destaque: true, garantia: "12 meses", marca: "ford" },
+        { id: 5, nome: "Ford Mustang GT 5.0", img: "https://assets.carandclassic.com/uploads/new/24236196/2022-ford-mustang-68bc17edacab9.jpg?fit=crop&h=600&ixlib=php-4.1.0&q=85&w=800&s=8dab54fe142c9b762407787859c5af82", preco: 489900, ano: "2023/2024", tipo: "esportivo", km: "5.000", combustivel: "Gasolina", cambio: "Automático", cor: "Azul", destaque: true, garantia: "12 meses", marca: "ford" },
+        { id: 16, nome: "Ford Bronco Sport 2.0", img: "https://hips.hearstapps.com/hmg-prod/images/2023-bronco-sport-black-diamond-1668522123.jpg?crop=0.796xw:0.601xh;0.204xw,0.228xh&resize=300:*", preco: 299900, ano: "2023/2024", tipo: "suv", km: "6.000", combustivel: "Gasolina", cambio: "Automático", cor: "Verde", destaque: true, garantia: "12 meses", marca: "ford" },
+        { id: 17, nome: "Ford Territory 1.5", img: "https://storage.googleapis.com/fotosautos/automotora/Salfa/1237/1208836/FORD-TERRITORY-klrxjy.webp", preco: 189900, ano: "2023/2024", tipo: "suv", km: "7.000", combustivel: "Flex", cambio: "Automático", cor: "Prata", destaque: false, garantia: "12 meses", marca: "ford" }
+      ],
+      honda: [
+        { id: 6, nome: "Honda Civic Touring 1.5", img: "https://tse3.mm.bing.net/th/id/OIP.g9lv_ZhG8nm54T2zWW1XtQAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 179900, ano: "2023/2024", tipo: "sedan", km: "10.000", combustivel: "Flex", cambio: "Automático", cor: "Cinza", destaque: true, garantia: "12 meses", marca: "honda" },
+        { id: 7, nome: "Honda HR-V EXL 1.8", img: "https://tse3.mm.bing.net/th/id/OIP.H7oOvnmB-KU0bPoLL7AJsQHaGT?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 159900, ano: "2023/2024", tipo: "suv", km: "12.000", combustivel: "Flex", cambio: "Automático", cor: "Branco", destaque: false, garantia: "12 meses", marca: "honda" },
+        { id: 18, nome: "Honda City Hatch 1.5", img: "https://paultan.org/image/2022/04/Honda-City-Hatchback-RS-press-9.jpg", preco: 114900, ano: "2023/2024", tipo: "hatch", km: "8.000", combustivel: "Flex", cambio: "Automático", cor: "Vermelho", destaque: false, garantia: "12 meses", marca: "honda" },
+        { id: 19, nome: "Honda Accord 2.0", img: "https://tse3.mm.bing.net/th/id/OIP.9ZQNXurTXbdztRe-Qf1vYwHaFj?r=0&w=1024&h=768&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 249900, ano: "2023/2024", tipo: "sedan", km: "3.000", combustivel: "Flex", cambio: "Automático", cor: "Preto", destaque: true, garantia: "12 meses", marca: "honda" }
+      ],
+      toyota: [
+        { id: 8, nome: "Toyota Corolla Altis Hybrid", img: "https://tse4.mm.bing.net/th/id/OIP.2f_ZHtOtRTsXveySiR8tdAHaEu?w=690&h=440&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 189900, ano: "2023/2024", tipo: "sedan", km: "7.000", combustivel: "Flex", cambio: "Automático", cor: "Prata", destaque: true, garantia: "12 meses", marca: "toyota" },
+        { id: 9, nome: "Toyota Hilux SRX 2.8", img: "https://www.autocerto.com/fotos/1853/732004/20.jpg", preco: 249900, ano: "2023/2024", tipo: "pickup", km: "9.000", combustivel: "Diesel", cambio: "Automático", cor: "Branco", destaque: true, garantia: "12 meses", marca: "toyota" },
+        { id: 20, nome: "Toyota SW4 Diamond 2.8", img: "https://tse1.mm.bing.net/th/id/OIP.X1ouHN3tletHn8jOkLMh4gHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 349900, ano: "2023/2024", tipo: "suv", km: "4.000", combustivel: "Diesel", cambio: "Automático", cor: "Prata", destaque: true, garantia: "12 meses", marca: "toyota" },
+        { id: 21, nome: "Toyota Yaris XS 1.5", img: "https://tse3.mm.bing.net/th/id/OIP.7lNORuj0-VDhqeNY-HknqQHaFj?r=0&w=640&h=480&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 89900, ano: "2023/2024", tipo: "hatch", km: "11.000", combustivel: "Flex", cambio: "Manual", cor: "Azul", destaque: false, garantia: "12 meses", marca: "toyota" }
+      ],
+      chevrolet: [
+        { id: 10, nome: "Chevrolet Onix Plus Premier", img: "https://tse4.mm.bing.net/th/id/OIP.0K2K_gq1RcrjVIkxakcCBQHaEo?w=900&h=563&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 89900, ano: "2023/2024", tipo: "sedan", km: "11.000", combustivel: "Flex", cambio: "Automático", cor: "Preto", destaque: false, garantia: "12 meses", marca: "chevrolet" },
+        { id: 11, nome: "Chevrolet Tracker Premier 1.2", img: "https://http2.mlstatic.com/D_NQ_NP_666838-MLB77656274890_072024-O.webp", preco: 139900, ano: "2023/2024", tipo: "suv", km: "8.000", combustivel: "Flex", cambio: "Automático", cor: "Vermelho", destaque: true, garantia: "12 meses", marca: "chevrolet" },
+        { id: 22, nome: "Chevrolet Cruze LTZ 1.4", img: "https://tse1.mm.bing.net/th/id/OIP.kMRkFONQ7PbvQda4w1cF_AHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 129900, ano: "2023/2024", tipo: "sedan", km: "9.000", combustivel: "Flex", cambio: "Automático", cor: "Cinza", destaque: false, garantia: "12 meses", marca: "chevrolet" },
+        { id: 23, nome: "Chevrolet Silverado 6.2", img: "https://topcarspecs.com/manufacturers/chevrolet/chevrolet-silverado/chevrolet-silverado-6.2/chevrolet-silverado-6.2-7.jpg", preco: 459900, ano: "2023/2024", tipo: "pickup", km: "3.000", combustivel: "Gasolina", cambio: "Automático", cor: "Vermelho", destaque: true, garantia: "12 meses", marca: "chevrolet" }
+      ],
+      volkswagen: [
+        { id: 12, nome: "Volkswagen T-Cross Highline", img: "https://tse3.mm.bing.net/th/id/OIP.QKy_GyvMk81CyVDVOZ7g6AHaEk?w=1024&h=631&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 134900, ano: "2023/2024", tipo: "suv", km: "6.000", combustivel: "Flex", cambio: "Automático", cor: "Azul", destaque: true, garantia: "12 meses", marca: "volkswagen" },
+        { id: 13, nome: "Volkswagen Polo GTS", img: "https://tse1.mm.bing.net/th/id/OIP.YGRePQJmju7kAfVo0N8dSgHaDe?w=1024&h=480&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 112900, ano: "2023/2024", tipo: "hatch", km: "5.000", combustivel: "Flex", cambio: "Automático", cor: "Cinza", destaque: false, garantia: "12 meses", marca: "volkswagen" },
+        { id: 24, nome: "Volkswagen Jetta GLI 2.0", img: "https://tse4.mm.bing.net/th/id/OIP.9ZJNjryy6ycbcwM50duH9QHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 189900, ano: "2023/2024", tipo: "sedan", km: "4.000", combustivel: "Flex", cambio: "Automático", cor: "Prata", destaque: true, garantia: "12 meses", marca: "volkswagen" },
+        { id: 25, nome: "Volkswagen Taos Comfortline", img: "https://cuyomotor.com.ar/wp-content/uploads/2023/03/Volkswagen-Taos-Comfortline.jpg", preco: 159900, ano: "2023/2024", tipo: "suv", km: "7.000", combustivel: "Flex", cambio: "Automático", cor: "Branco", destaque: false, garantia: "12 meses", marca: "volkswagen" }
+      ],
+      bmw: [
+        { id: 26, nome: "BMW 320i GP", img: "https://tse2.mm.bing.net/th/id/OIP.KiI7qDO3qZA3j4AMTb1v3wHaEL?r=0&w=1200&h=677&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 279900, ano: "2023/2024", tipo: "sedan", km: "3.000", combustivel: "Gasolina", cambio: "Automático", cor: "Preto", destaque: true, garantia: "24 meses", marca: "bmw" },
+        { id: 27, nome: "BMW X1 sDrive20i", img: "https://tse4.mm.bing.net/th/id/OIP.Hub-pZ50ZDZtOLCs_cMUdgHaDg?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 259900, ano: "2023/2024", tipo: "suv", km: "5.000", combustivel: "Gasolina", cambio: "Automático", cor: "Prata", destaque: true, garantia: "24 meses", marca: "bmw" },
+        { id: 28, nome: "BMW X5 xDrive40i", img: "https://th.bing.com/th/id/R.3212e2bffe7e2c9977c83c61402f157e?rik=OxWFhXodrqatcQ&pid=ImgRaw&r=0", preco: 549900, ano: "2023/2024", tipo: "suv", km: "2.000", combustivel: "Gasolina", cambio: "Automático", cor: "Azul", destaque: true, garantia: "24 meses", marca: "bmw" }
+      ],
+      mercedes: [
+        { id: 29, nome: "Mercedes-Benz C200", img: "https://tse2.mm.bing.net/th/id/OIP.topVDtMW9rblsv_cptAADwHaE7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 319900, ano: "2023/2024", tipo: "sedan", km: "4.000", combustivel: "Gasolina", cambio: "Automático", cor: "Branco", destaque: true, garantia: "24 meses", marca: "mercedes" },
+        { id: 30, nome: "Mercedes-Benz GLA 200", img: "https://tse2.mm.bing.net/th/id/OIP.AZeBZEwo1wPm-oa7JAwefQHaEK?r=0&w=800&h=450&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 289900, ano: "2023/2024", tipo: "suv", km: "6.000", combustivel: "Gasolina", cambio: "Automático", cor: "Cinza", destaque: true, garantia: "24 meses", marca: "mercedes" },
+        { id: 31, nome: "Mercedes-Benz GLC 300", img: "https://tse3.mm.bing.net/th/id/OIP.ZP9A7Pz5dXjNAMXoaBYxVgHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 419900, ano: "2023/2024", tipo: "suv", km: "3.000", combustivel: "Gasolina", cambio: "Automático", cor: "Preto", destaque: true, garantia: "24 meses", marca: "mercedes" }
+      ],
+      audi: [
+        { id: 32, nome: "Audi A3 Sedan 1.4", img: "https://img-ik.cars.co.za/ik-seo/carsimages/9405082/2019-Audi-A3-Sedan-10-TFSI-Auto-30-TFSI.jpg?v=4126455590&tr=h-267,w-400,q-80", preco: 209900, ano: "2023/2024", tipo: "sedan", km: "5.000", combustivel: "Flex", cambio: "Automático", cor: "Prata", destaque: true, garantia: "24 meses", marca: "audi" },
+        { id: 33, nome: "Audi Q3 2.0", img: "https://acroadtrip.blob.core.windows.net/publicaciones-imagenes/Large/audi/q3/mx/RT_PU_be482f29f7924ee6b021338bc9a4ce45.webp", preco: 249900, ano: "2023/2024", tipo: "suv", km: "4.000", combustivel: "Gasolina", cambio: "Automático", cor: "Azul", destaque: true, garantia: "24 meses", marca: "audi" },
+        { id: 34, nome: "Audi Q5 2.0", img: "https://tse1.mm.bing.net/th/id/OIP.3-wvgmZBmTx4L3eh3VO9yAHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 329900, ano: "2023/2024", tipo: "suv", km: "3.000", combustivel: "Gasolina", cambio: "Automático", cor: "Preto", destaque: true, garantia: "24 meses", marca: "audi" }
+      ],
+      jeep: [
+        { id: 35, nome: "Jeep Compass Longitude", img: "https://mundodoautomovelparapcd.com.br/wp-content/uploads/2020/07/Compass-Longitude-Diesel-7.jpg", preco: 149900, ano: "2023/2024", tipo: "suv", km: "8.000", combustivel: "Flex", cambio: "Automático", cor: "Branco", destaque: true, garantia: "12 meses", marca: "jeep" },
+        { id: 36, nome: "Jeep Renegade Sport", img: "https://www.carscoops.com/wp-content/uploads/2022/09/2023-Jeep-Renegade.jpg", preco: 109900, ano: "2023/2024", tipo: "suv", km: "10.000", combustivel: "Flex", cambio: "Manual", cor: "Vermelho", destaque: false, garantia: "12 meses", marca: "jeep" },
+        { id: 37, nome: "Jeep Commander 2.0", img: "https://tse2.mm.bing.net/th/id/OIP.1qiAz_Irfw77Ul0RfVRZogHaEc?r=0&w=1666&h=1000&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 239900, ano: "2023/2024", tipo: "suv", km: "5.000", combustivel: "Diesel", cambio: "Automático", cor: "Prata", destaque: true, garantia: "12 meses", marca: "jeep" }
+      ],
+      renault: [
+        { id: 38, nome: "Renault Kwid Intens", img: "https://tse2.mm.bing.net/th/id/OIP.fQ9z5pzcr6JBdkZi-v-SEQHaE8?r=0&w=1620&h=1080&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 64900, ano: "2023/2024", tipo: "hatch", km: "15.000", combustivel: "Flex", cambio: "Manual", cor: "Amarelo", destaque: false, garantia: "12 meses", marca: "renault" },
+        { id: 39, nome: "Renault Sandero RS", img: "https://th.bing.com/th/id/R.dd8b28c90ce39a7b5219e5cd9e3cf7b9?rik=%2bniefQm5u8fccA&pid=ImgRaw&r=0", preco: 99900, ano: "2023/2024", tipo: "hatch", km: "7.000", combustivel: "Flex", cambio: "Manual", cor: "Azul", destaque: true, garantia: "12 meses", marca: "renault" },
+        { id: 40, nome: "Renault Duster 1.6", img: "https://tse4.mm.bing.net/th/id/OIP.gwVCOMAa5zqcFLchkc7d7QHaEo?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 119900, ano: "2023/2024", tipo: "suv", km: "9.000", combustivel: "Flex", cambio: "Automático", cor: "Cinza", destaque: false, garantia: "12 meses", marca: "renault" }
+      ],
+      hyundai: [
+        { id: 41, nome: "Hyundai HB20 Platinum", img: "https://tse3.mm.bing.net/th/id/OIP.iJFDEVYOzedwd8YQvZFu3QHaDx?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 79900, ano: "2023/2024", tipo: "hatch", km: "12.000", combustivel: "Flex", cambio: "Manual", cor: "Preto", destaque: false, garantia: "12 meses", marca: "hyundai" },
+        { id: 42, nome: "Hyundai Creta 1.6", img: "https://tse2.mm.bing.net/th/id/OIP.jugUBCxjSd9eeoJdvFMXWgHaEK?r=0&w=1920&h=1080&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 129900, ano: "2023/2024", tipo: "suv", km: "8.000", combustivel: "Flex", cambio: "Automático", cor: "Vermelho", destaque: true, garantia: "12 meses", marca: "hyundai" },
+        { id: 43, nome: "Hyundai Tucson 2.0", img: "https://tse3.mm.bing.net/th/id/OIP.uXExGg-G-CvJj6T7UkOQuAHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 159900, ano: "2023/2024", tipo: "suv", km: "6.000", combustivel: "Flex", cambio: "Automático", cor: "Branco", destaque: false, garantia: "12 meses", marca: "hyundai" }
+      ],
+      nissan: [
+        { id: 44, nome: "Nissan Kicks SV", img: "https://tse1.mm.bing.net/th/id/OIP.81Kk8LVQyyk0SMtgpcPO8AHaEw?r=0&w=810&h=520&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 109900, ano: "2023/2024", tipo: "suv", km: "10.000", combustivel: "Flex", cambio: "Automático", cor: "Prata", destaque: false, garantia: "12 meses", marca: "nissan" },
+        { id: 45, nome: "Nissan Sentra 2.0", img: "https://tse3.mm.bing.net/th/id/OIP.dTq0Z-HZWV4sgftLvIgM_wHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 139900, ano: "2023/2024", tipo: "sedan", km: "7.000", combustivel: "Flex", cambio: "Automático", cor: "Azul", destaque: true, garantia: "12 meses", marca: "nissan" },
+        { id: 46, nome: "Nissan Frontier 2.3", img: "https://tse1.mm.bing.net/th/id/OIP.1Uunak6CsyvVPjt50LERDAHaFj?r=0&w=640&h=480&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 229900, ano: "2023/2024", tipo: "pickup", km: "5.000", combustivel: "Diesel", cambio: "Automático", cor: "Branco", destaque: true, garantia: "12 meses", marca: "nissan" }
+      ],
+      kia: [
+        { id: 47, nome: "Kia Sportage 1.6", img: "https://tse3.mm.bing.net/th/id/OIP.CYCWoBHGI4S7HPIeHDKBpAHaFj?r=0&w=480&h=360&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 169900, ano: "2023/2024", tipo: "suv", km: "6.000", combustivel: "Flex", cambio: "Automático", cor: "Vermelho", destaque: true, garantia: "12 meses", marca: "kia" },
+        { id: 48, nome: "Kia Stinger GT 3.3", img: "https://th.bing.com/th/id/R.3f75932d282d64553213b1467bb23f60?rik=%2fEUQuJ8e%2fsDfzQ&pid=ImgRaw&r=0", preco: 319900, ano: "2023/2024", tipo: "esportivo", km: "3.000", combustivel: "Gasolina", cambio: "Automático", cor: "Cinza", destaque: true, garantia: "12 meses", marca: "kia" }
+      ],
+      peugeot: [
+        { id: 49, nome: "Peugeot 208 GT", img: "https://tse4.mm.bing.net/th/id/OIP.NsDWTTyYUs_aNkHp8dnb1QHaE8?r=0&w=1024&h=683&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 89900, ano: "2023/2024", tipo: "hatch", km: "8.000", combustivel: "Flex", cambio: "Manual", cor: "Amarelo", destaque: false, garantia: "12 meses", marca: "peugeot" },
+        { id: 50, nome: "Peugeot 2008 Allure", img: "https://tse1.mm.bing.net/th/id/OIP.xKo8I22cwpC0GOYE2pUx9QHaE7?r=0&w=800&h=533&rs=1&pid=ImgDetMain&o=7&rm=3", preco: 119900, ano: "2023/2024", tipo: "suv", km: "9.000", combustivel: "Flex", cambio: "Automático", cor: "Branco", destaque: false, garantia: "12 meses", marca: "peugeot" }
+      ]
+    };
+
+    // ===================== LÓGICA DO CATÁLOGO =====================
+    let todosCarros = [];
+    Object.values(catalogos).forEach(carros => todosCarros = todosCarros.concat(carros));
+    let carrosFiltrados = [...todosCarros];
+    const ITENS_POR_PAGINA = 8;
+    let paginaAtual = 1;
+
+    // Elementos
+    const catalogoEl = document.getElementById('catalogo');
+    const loadingEl = document.getElementById('loading');
+    const emptyEl = document.getElementById('emptyState');
+    const paginacaoEl = document.getElementById('pagination');
+    const resultCountEl = document.getElementById('resultCount');
+
+    // Inicializa
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('totalCarros').textContent = todosCarros.length;
+      const params = new URLSearchParams(window.location.search);
+      const busca = params.get('busca');
+      if (busca) {
+        document.getElementById('searchText').value = busca;
+      }
+      aplicarFiltros();
+      configurarEventos();
+    });
+
+    function configurarEventos() {
+      document.getElementById('applyFilters').addEventListener('click', aplicarFiltros);
+      document.getElementById('clearFilters').addEventListener('click', limparFiltros);
+      document.getElementById('resetFilters').addEventListener('click', limparFiltros);
+      document.getElementById('searchText').addEventListener('input', aplicarFiltros);
+      document.getElementById('marcaFilter').addEventListener('change', aplicarFiltros);
+      document.getElementById('tipoFilter').addEventListener('change', aplicarFiltros);
+      document.getElementById('sortSelect').addEventListener('change', aplicarFiltros);
+      document.getElementById('precoMin').addEventListener('change', aplicarFiltros);
+      document.getElementById('precoMax').addEventListener('change', aplicarFiltros);
+    }
+
+    function aplicarFiltros() {
+      const search = document.getElementById('searchText').value.toLowerCase().trim();
+      const marca = document.getElementById('marcaFilter').value;
+      const tipo = document.getElementById('tipoFilter').value;
+      const precoMin = parseFloat(document.getElementById('precoMin').value) || 0;
+      const precoMax = parseFloat(document.getElementById('precoMax').value) || Infinity;
+      const sort = document.getElementById('sortSelect').value;
+
+      carrosFiltrados = todosCarros.filter(carro => {
+        if (search && !carro.nome.toLowerCase().includes(search) && !carro.marca.toLowerCase().includes(search) && !carro.tipo.toLowerCase().includes(search)) return false;
+        if (marca && carro.marca !== marca) return false;
+        if (tipo && carro.tipo !== tipo) return false;
+        if (carro.preco < precoMin || carro.preco > precoMax) return false;
+        return true;
+      });
+
+      switch (sort) {
+        case 'preco-asc': carrosFiltrados.sort((a, b) => a.preco - b.preco); break;
+        case 'preco-desc': carrosFiltrados.sort((a, b) => b.preco - a.preco); break;
+        case 'ano-desc': carrosFiltrados.sort((a, b) => b.ano.localeCompare(a.ano)); break;
+        default: carrosFiltrados.sort((a, b) => a.nome.localeCompare(b.nome));
+      }
+
+      paginaAtual = 1;
+      exibirPagina();
+    }
+
+    function limparFiltros() {
+      document.getElementById('searchText').value = '';
+      document.getElementById('marcaFilter').value = '';
+      document.getElementById('tipoFilter').value = '';
+      document.getElementById('precoMin').value = '';
+      document.getElementById('precoMax').value = '';
+      document.getElementById('sortSelect').value = 'nome';
+      aplicarFiltros();
+    }
+
+    function exibirPagina() {
+      const total = carrosFiltrados.length;
+      const totalPaginas = Math.ceil(total / ITENS_POR_PAGINA);
+      if (total === 0) {
+        catalogoEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+        loadingEl.style.display = 'none';
+        paginacaoEl.innerHTML = '';
+        resultCountEl.textContent = '0 veículos';
+        return;
+      }
+      emptyEl.style.display = 'none';
+      catalogoEl.style.display = 'grid';
+      loadingEl.style.display = 'none';
+
+      const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
+      const fim = Math.min(inicio + ITENS_POR_PAGINA, total);
+      const carrosPagina = carrosFiltrados.slice(inicio, fim);
+
+      catalogoEl.innerHTML = carrosPagina.map(carro => criarCard(carro)).join('');
+      resultCountEl.textContent = `${total} veículos encontrados`;
+
+      paginacaoEl.innerHTML = '';
+      for (let i = 1; i <= totalPaginas; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        if (i === paginaAtual) btn.classList.add('active');
+        btn.addEventListener('click', () => {
+          paginaAtual = i;
+          exibirPagina();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        paginacaoEl.appendChild(btn);
+      }
+    }
+
+    function criarCard(carro) {
+      const preco = formatarPreco(carro.preco);
+      const destaque = carro.destaque ? 'featured' : '';
+      return `
+        <div class="card ${destaque}" data-id="${carro.id}">
+          <div class="card-img-container">
+            <img src="${carro.img}" alt="${carro.nome}" class="card-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200/3498db/ffffff?text=AutoPremium'" />
+            <div class="card-badge"><i class="fas fa-shield-alt"></i> ${carro.garantia}</div>
+          </div>
+          <div class="card-content">
+            <div class="card-header">
+              <h3>${carro.nome}</h3>
+              <div class="card-price">${preco}</div>
+            </div>
+            <div class="card-specs">
+              <div class="spec-item"><i class="fas fa-calendar-alt"></i> ${carro.ano}</div>
+              <div class="spec-item"><i class="fas fa-tachometer-alt"></i> ${carro.km} km</div>
+              <div class="spec-item"><i class="fas fa-gas-pump"></i> ${carro.combustivel}</div>
+              <div class="spec-item"><i class="fas fa-cog"></i> ${carro.cambio}</div>
+            </div>
+            <div class="card-features">
+              <span class="feature-tag">${carro.tipo.toUpperCase()}</span>
+              <span class="feature-tag">${carro.cor}</span>
+              <span class="feature-tag">${carro.marca.toUpperCase()}</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-primary" onclick="comprarCarro(${carro.id})"><i class="fas fa-shopping-cart"></i> Comprar</button>
+              <button class="btn btn-secondary" onclick="detalhesCarro(${carro.id})"><i class="fas fa-info-circle"></i></button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function comprarCarro(id) {
+      const carro = todosCarros.find(c => c.id === id);
+      if (carro && confirm(`Comprar ${carro.nome} por ${formatarPreco(carro.preco)}?`)) {
+        window.location.href = `compra.html?carro=${encodeURIComponent(carro.nome)}&preco=${encodeURIComponent(formatarPreco(carro.preco))}&ano=${encodeURIComponent(carro.ano)}`;
+      }
+    }
+
+    function detalhesCarro(id) {
+      const carro = todosCarros.find(c => c.id === id);
+      if (carro) {
+        alert(`Detalhes do ${carro.nome}:\n\nPreço: ${formatarPreco(carro.preco)}\nAno: ${carro.ano}\nKM: ${carro.km}\nCombustível: ${carro.combustivel}\nCâmbio: ${carro.cambio}\nCor: ${carro.cor}\nTipo: ${carro.tipo}\nGarantia: ${carro.garantia}`);
+      }
+    }
+
+    function formatarPreco(valor) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+    }
+  </script>
+</body>
+
+</html>

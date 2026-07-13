@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoPremium - Nota Fiscal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .nota-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .nota-header {
+      background: linear-gradient(135deg, var(--success), #2ecc71);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .nota-header::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+    .nota-header h1 { font-size: 2.5rem; margin: 0.5rem 0; }
+    .nota-header p { opacity: 0.9; margin: 0; }
+    .success-icon { 
+      font-size: 4rem; 
+      display: inline-block;
+      animation: bounce 1s ease infinite alternate;
+    }
+    @keyframes bounce { 
+      from { transform: translateY(0); } 
+      to { transform: translateY(-12px); } 
+    }
+    .pedido-number {
+      background: var(--secondary);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .pedido-number h3 { margin: 0 0 0.3rem 0; font-weight: 400; }
+    .pedido-number p { 
+      font-size: 1.8rem; 
+      font-weight: 700; 
+      letter-spacing: 3px; 
+      margin: 0;
+      font-family: 'Courier New', monospace;
+    }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .info-card { 
+      background: #f8f9fa; 
+      padding: 1.5rem; 
+      border-radius: 8px; 
+      border-left: 4px solid var(--primary);
+    }
+    .info-card h3 { 
+      color: #1a1a1a; 
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+    }
+    .info-item { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 0.6rem;
+      border-bottom: 1px dashed #e0e0e0;
+      padding-bottom: 0.6rem;
+    }
+    .info-item:last-child { border: none; margin-bottom: 0; padding-bottom: 0; }
+    .info-label { font-weight: 600; color: #1a1a1a; }
+    .info-item span { color: #1a1a1a; word-break: break-word; }
+    .highlight { color: var(--danger); font-weight: 700; }
+    .carro-detalhes { 
+      display: flex; 
+      align-items: center; 
+      gap: 1.5rem; 
+      background: #f8f9fa; 
+      padding: 1.5rem; 
+      border-radius: 8px; 
+      margin: 1.5rem 0; 
+    }
+    .carro-detalhes i { font-size: 3rem; color: var(--primary); }
+    .carro-preco { color: var(--danger); font-size: 1.8rem; font-weight: 700; }
+    .carro-detalhes h3 { color: #1a1a1a; margin: 0; }
+    .carro-detalhes div { color: #1a1a1a; }
+    .detalhes-pagamento {
+      background: #f0f7ff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      border-left: 4px solid var(--primary);
+    }
+    .detalhes-pagamento h3 { color: #1a1a1a; margin: 0 0 1rem 0; }
+    .timeline { margin: 1.5rem 0; }
+    .timeline-item { 
+      display: flex; 
+      align-items: center; 
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: slideInItem 0.5s ease forwards;
+    }
+    .timeline-item:nth-child(1) { animation-delay: 0.2s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.4s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.6s; }
+    @keyframes slideInItem {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .timeline-icon { 
+      width: 40px; 
+      height: 40px; 
+      border-radius: 50%; 
+      background: var(--primary); 
+      color: white; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-right: 1rem; 
+      flex-shrink: 0; 
+    }
+    .timeline-item h4 { color: #1a1a1a; margin: 0; }
+    .timeline-item p { color: #1a1a1a; margin: 0; font-size: 0.9rem; opacity: 0.8; }
+    .nota-actions { 
+      display: flex; 
+      gap: 1rem; 
+      padding: 2rem; 
+      justify-content: center; 
+      flex-wrap: wrap; 
+      border-top: 1px solid #e9ecef;
+    }
+    .nota-actions .btn { 
+      flex: 1; 
+      min-width: 150px; 
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .nota-container footer {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      text-align: center;
+      border-top: 1px solid #e9ecef;
+    }
+    .nota-container footer p {
+      color: #1a1a1a;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+      overflow: hidden;
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-10px) rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg) scale(0.5); opacity: 0; }
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--danger); }
+    .toast-info { background: var(--primary); }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .pix-key-display {
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      border: 1px dashed var(--primary);
+    }
+    .boleto-code-display {
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 2px;
+    }
+    .status-aprovado { color: var(--success); font-weight: 700; }
+    .status-reprovado { color: var(--danger); font-weight: 700; }
+    @media (max-width: 768px) {
+      .info-grid { grid-template-columns: 1fr; }
+      .carro-detalhes { flex-direction: column; text-align: center; }
+      .nota-actions { flex-direction: column; }
+      .pedido-number p { font-size: 1.3rem; }
+    }
+    @media print {
+      .nota-actions, .btn, .confetti-container { display: none !important; }
+      .nota-container { box-shadow: none; border: 1px solid #ddd; margin: 0; }
+      .nota-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .pedido-number { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nota-container">
+    <div class="nota-header">
+      <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+      <h1>Compra Realizada!</h1>
+      <p>Obrigado por escolher a AutoPremium</p>
+    </div>
+    <div style="padding: 2rem;">
+      <div class="pedido-number">
+        <h3><i class="fas fa-receipt"></i> Número do Pedido</h3>
+        <p id="numeroPedido">AP-2025-0001</p>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3><i class="fas fa-user"></i> Cliente</h3>
+          <div class="info-item"><span class="info-label">Nome:</span><span id="nome">-</span></div>
+          <div class="info-item"><span class="info-label">E-mail:</span><span id="email">-</span></div>
+          <div class="info-item"><span class="info-label">Telefone:</span><span id="telefone">-</span></div>
+          <div class="info-item"><span class="info-label">CPF:</span><span id="cpf">-</span></div>
+        </div>
+        <div class="info-card">
+          <h3><i class="fas fa-credit-card"></i> Pagamento</h3>
+          <div class="info-item"><span class="info-label">Forma:</span><span id="pagamento">-</span></div>
+          <div class="info-item"><span class="info-label">Status:</span><span class="highlight"><i class="fas fa-check-circle"></i> Aprovado</span></div>
+          <div class="info-item"><span class="info-label">Data:</span><span id="dataCompra">-</span></div>
+          <div class="info-item"><span class="info-label">Protocolo:</span><span id="protocolo">-</span></div>
+        </div>
+      </div>
+      <div class="carro-detalhes">
+        <i class="fas fa-car"></i>
+        <div style="flex: 1;">
+          <h3 id="carro">Carro Selecionado</h3>
+          <div class="carro-preco" id="preco">Preço não informado</div>
+          <div><strong>Ano:</strong> <span id="ano">-</span> &nbsp;|&nbsp; <strong>Cor:</strong> <span id="cor">-</span></div>
+        </div>
+      </div>
+
+      <!-- Detalhes específicos do pagamento -->
+      <div class="detalhes-pagamento" id="detalhesPagamento">
+        <h3><i class="fas fa-info-circle"></i> Detalhes do Pagamento</h3>
+        <div id="detalhesConteudo"></div>
+      </div>
+
+      <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+        <h3 style="color: #1a1a1a; margin-top: 0;"><i class="fas fa-info-circle"></i> Próximos Passos</h3>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-icon"><i class="fas fa-phone"></i></div>
+            <div><h4>Contato</h4><p>Nossa equipe ligará em até 24h</p></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon"><i class="fas fa-calendar-check"></i></div>
+            <div><h4>Agendamento</h4><p>Combinaremos a entrega</p></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon"><i class="fas fa-car-side"></i></div>
+            <div><h4>Retirada</h4><p>Você receberá seu carro</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nota-actions">
+      <button class="btn btn-primary" id="btnImprimir"><i class="fas fa-print"></i> Imprimir</button>
+      <button class="btn btn-success" id="btnEnviarEmail"><i class="fas fa-envelope"></i> Enviar por E-mail</button>
+      <button class="btn btn-secondary" id="btnInicio"><i class="fas fa-home"></i> Início</button>
+    </div>
+    <footer>
+      <div class="footer-logo" style="margin-bottom: 0.5rem;">
+        <img src="imag/Devlops.png" alt="Technatt Devlops" style="height: 30px; filter: none;" />
+      </div>
+      <p>&copy; 2025 TechNatt</p>
+    </footer>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ============================
+      // 1. Carregar dados
+      // ============================
+      const params = new URLSearchParams(window.location.search);
+      
+      let dadosSalvos = null;
+      try {
+        const stored = localStorage.getItem('dadosCompra');
+        if (stored) dadosSalvos = JSON.parse(stored);
+      } catch (e) {}
+
+      let carroSalvo = null;
+      try {
+        const stored = localStorage.getItem('carroSelecionado');
+        if (stored) carroSalvo = JSON.parse(stored);
+      } catch (e) {}
+
+      const nome = params.get('nome') || dadosSalvos?.nome || 'Não informado';
+      const email = params.get('email') || dadosSalvos?.email || 'Não informado';
+      const telefone = params.get('telefone') || dadosSalvos?.telefone || 'Não informado';
+      const cpf = params.get('cpf') || dadosSalvos?.cpf || 'Não informado';
+      const pagamento = params.get('pagamento') || dadosSalvos?.pagamento || 'Não selecionado';
+      const carro = params.get('carro') || carroSalvo?.nome || 'Não selecionado';
+      const preco = params.get('preco') || carroSalvo?.preco || 'Preço não informado';
+      const ano = params.get('ano') || carroSalvo?.ano || 'Não informado';
+      const cor = params.get('cor') || carroSalvo?.cor || 'Não informada';
+      
+      let detalhes = {};
+      try {
+        const detalhesStr = params.get('detalhes');
+        if (detalhesStr) detalhes = JSON.parse(decodeURIComponent(detalhesStr));
+        else if (dadosSalvos?.detalhes) detalhes = dadosSalvos.detalhes;
+      } catch (e) {}
+
+      // Preencher elementos
+      document.getElementById('nome').textContent = nome;
+      document.getElementById('email').textContent = email;
+      document.getElementById('telefone').textContent = telefone;
+      document.getElementById('cpf').textContent = cpf;
+      document.getElementById('pagamento').textContent = getPagamentoLabel(pagamento);
+      document.getElementById('carro').textContent = carro;
+      document.getElementById('preco').textContent = preco;
+      document.getElementById('ano').textContent = ano;
+      document.getElementById('cor').textContent = cor;
+
+      function getPagamentoLabel(valor) {
+        const labels = {
+          'cartao': 'Cartão de Crédito',
+          'boleto': 'Boleto Bancário',
+          'pix': 'Pix',
+          'financiamento': 'Financiamento'
+        };
+        return labels[valor] || valor;
+      }
+
+      // Data e protocolo
+      const dataAtual = new Date();
+      document.getElementById('dataCompra').textContent = dataAtual.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      function gerarNumeroPedido() {
+        const ano = dataAtual.getFullYear();
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const random = String(Math.floor(Math.random() * 1000)).padStart(4, '0');
+        return `AP-${ano}-${mes}${dia}-${random}`;
+      }
+
+      function gerarProtocolo() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let resultado = '';
+        for (let i = 0; i < 8; i++) {
+          resultado += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return resultado;
+      }
+
+      const numeroPedido = gerarNumeroPedido();
+      const protocolo = gerarProtocolo();
+      document.getElementById('numeroPedido').textContent = numeroPedido;
+      document.getElementById('protocolo').textContent = protocolo;
+
+      // ============================
+      // 2. Preencher detalhes do pagamento
+      // ============================
+      function preencherDetalhes() {
+        const container = document.getElementById('detalhesConteudo');
+        let html = '';
+
+        switch(pagamento) {
+          case 'cartao':
+            html = `
+              <div class="info-item"><span class="info-label">Parcelas:</span><span>${detalhes.parcelas || 'Não informado'}x</span></div>
+              <div class="info-item"><span class="info-label">Valor da parcela:</span><span>${detalhes.valorParcela || 'Não informado'}</span></div>
+              <div class="info-item"><span class="info-label">Últimos 4 dígitos:</span><span>**** **** **** ${detalhes.ultimosDigitos || '****'}</span></div>
+              <div class="info-item"><span class="info-label">Status:</span><span class="highlight">✅ Pagamento autorizado</span></div>
+            `;
+            break;
+          case 'boleto':
+            html = `
+              <div class="info-item"><span class="info-label">Valor com desconto:</span><span>${detalhes.valorComDesconto || 'Não informado'}</span></div>
+              <div class="info-item"><span class="info-label">Código de barras:</span><span class="boleto-code-display">${detalhes.codigo || 'Não gerado'}</span></div>
+              <div class="info-item"><span class="info-label">Vencimento:</span><span>${detalhes.vencimento || 'Não informado'}</span></div>
+              <div class="info-item"><span class="info-label">Status:</span><span class="status-aprovado">✅ Aguardando pagamento</span></div>
+              <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+                <i class="fas fa-info-circle"></i> O boleto será enviado para seu e-mail
+              </div>
+            `;
+            break;
+          case 'pix':
+            html = `
+              <div class="info-item"><span class="info-label">Valor com desconto:</span><span>${detalhes.valorComDesconto || 'Não informado'}</span></div>
+              <div class="info-item"><span class="info-label">Chave Pix:</span><span class="pix-key-display">${detalhes.chavePix || 'Não gerada'}</span></div>
+              <div class="info-item"><span class="info-label">Status:</span><span class="status-aprovado">✅ Aguardando pagamento</span></div>
+              <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+                <i class="fas fa-info-circle"></i> QR Code e comprovante enviados por e-mail
+              </div>
+            `;
+            break;
+          case 'financiamento':
+            const aprovado = detalhes.aprovado !== undefined ? detalhes.aprovado : false;
+            html = `
+              <div class="info-item"><span class="info-label">Entrada:</span><span>${detalhes.entrada || 'Não informado'}</span></div>
+              <div class="info-item"><span class="info-label">Valor financiado:</span><span>${detalhes.valorFinanciado || 'Não informado'}</span></div>
+              <div class="info-item"><span class="info-label">Parcelas:</span><span>${detalhes.prazo || 'Não informado'}x de ${detalhes.parcela || 'Não informado'}</span></div>
+              <div class="info-item"><span class="info-label">Total a pagar:</span><span>${detalhes.total || 'Não informado'}</span></div>
+              <div class="info-item"><span class="info-label">Status:</span><span class="${aprovado ? 'status-aprovado' : 'status-reprovado'}">${aprovado ? '✅ Aprovado' : '❌ Aguardando análise'}</span></div>
+            `;
+            break;
+          default:
+            html = '<p style="color: #666;">Nenhum detalhe adicional disponível.</p>';
+        }
+
+        container.innerHTML = html;
+      }
+
+      preencherDetalhes();
+
+      // ============================
+      // 3. Confetes
+      // ============================
+      function criarConfetes() {
+        const container = document.createElement('div');
+        container.className = 'confetti-container';
+        document.body.appendChild(container);
+
+        const cores = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6fb7', '#a66cff'];
+        const shapes = ['■', '●', '▲', '★', '♦'];
+
+        for (let i = 0; i < 80; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          const size = 6 + Math.random() * 10;
+          const posX = Math.random() * 100;
+          const delay = Math.random() * 3;
+          const duration = 2 + Math.random() * 3;
+          const cor = cores[Math.floor(Math.random() * cores.length)];
+          
+          confetti.style.cssText = `
+            left: ${posX}%;
+            width: ${size}px;
+            height: ${size}px;
+            background: ${cor};
+            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+            animation-duration: ${duration}s;
+            animation-delay: ${delay}s;
+            transform: rotate(${Math.random() * 360}deg);
+          `;
+          confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+          confetti.style.display = 'flex';
+          confetti.style.alignItems = 'center';
+          confetti.style.justifyContent = 'center';
+          confetti.style.color = 'white';
+          confetti.style.fontSize = `${size * 0.6}px`;
+          
+          container.appendChild(confetti);
+        }
+
+        setTimeout(() => {
+          container.style.transition = 'opacity 0.5s ease';
+          container.style.opacity = '0';
+          setTimeout(() => container.remove(), 500);
+        }, 5000);
+      }
+
+      // ============================
+      // 4. Toast
+      // ============================
+      function exibirToast(mensagem, tipo = 'success') {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${tipo}`;
+        toast.innerHTML = `<i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'info' ? 'info-circle' : 'exclamation-circle'}"></i> ${mensagem}`;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(100%)';
+          toast.style.transition = 'all 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      // ============================
+      // 5. Botões
+      // ============================
+      document.getElementById('btnImprimir').addEventListener('click', function() {
+        window.print();
+      });
+
+      document.getElementById('btnEnviarEmail').addEventListener('click', function() {
+        const original = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        this.disabled = true;
+
+        setTimeout(() => {
+          this.innerHTML = '<i class="fas fa-check"></i> Enviado!';
+          exibirToast('Nota fiscal enviada para o e-mail cadastrado.', 'success');
+          setTimeout(() => {
+            this.innerHTML = original;
+            this.disabled = false;
+          }, 2000);
+        }, 2000);
+      });
+
+      document.getElementById('btnInicio').addEventListener('click', function() {
+        window.location.href = 'hh.html';
+      });
+
+      // ============================
+      // 6. Inicializar
+      // ============================
+      criarConfetes();
+
+      const notaData = {
+        numero: numeroPedido,
+        protocolo: protocolo,
+        data: dataAtual.toISOString(),
+        cliente: { nome, email, telefone, cpf },
+        carro: { nome: carro, preco, ano, cor },
+        pagamento: { tipo: pagamento, detalhes }
+      };
+      localStorage.setItem('ultimaNota', JSON.stringify(notaData));
+
+      console.log('📄 Nota fiscal gerada:', numeroPedido);
+      console.log('🔐 Protocolo:', protocolo);
+      console.log('💳 Pagamento:', pagamento);
+    })();
+  </script>
+</body>
+</html>

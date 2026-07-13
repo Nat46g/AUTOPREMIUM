@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoPremium - Finalizar Compra</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .container-compra {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .header-compra {
+      background: linear-gradient(135deg, var(--secondary), #1a2a3a);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .header-compra h1 { font-size: 2.5rem; }
+    .header-compra p { opacity: 0.9; }
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      position: relative;
+    }
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: #e0e0e0;
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .step-number {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      color: #7f8c8d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+    .step.active .step-number { 
+      background: var(--primary); 
+      color: white; 
+      box-shadow: 0 0 0 4px rgba(52,152,219,0.3);
+    }
+    .step.completed .step-number {
+      background: var(--success);
+      color: white;
+    }
+    .step-label { 
+      font-size: 0.85rem; 
+      color: #7f8c8d; 
+      margin-top: 0.5rem;
+      transition: color 0.3s ease;
+    }
+    .step.active .step-label { 
+      color: var(--primary); 
+      font-weight: 600; 
+    }
+    .step.completed .step-label {
+      color: var(--success);
+    }
+    .car-info {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .car-info i { font-size: 3rem; color: var(--primary); }
+    .car-details h2 { color: #1a1a1a; margin: 0; }
+    .car-price { color: var(--danger); font-size: 1.8rem; font-weight: 700; }
+    .car-details div { color: #1a1a1a; }
+    .form-compra { padding: 2rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { 
+      display: block; 
+      font-weight: 600; 
+      color: #1a1a1a; 
+      margin-bottom: 0.5rem; 
+    }
+    .form-group label .required {
+      color: var(--danger);
+      margin-left: 2px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: var(--transition);
+      color: #1a1a1a;
+      background: white;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+    }
+    .form-group input:disabled, .form-group select:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .form-row { display: flex; gap: 1rem; }
+    .form-row .form-group { flex: 1; }
+    .error-message { 
+      color: var(--danger); 
+      font-size: 0.85rem; 
+      display: none; 
+      margin-top: 0.25rem;
+    }
+    .form-group.error input, .form-group.error select { 
+      border-color: var(--danger); 
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+    .form-group.error .error-message { display: block; }
+    .form-group.success input, .form-group.success select {
+      border-color: var(--success);
+    }
+    .payment-details {
+      background: #f0f7ff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      margin: 1.5rem 0;
+      display: none;
+    }
+    .payment-details.visible {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .payment-details h3 { color: #1a1a1a; margin: 0 0 0.5rem 0; }
+    .payment-details p { color: #1a1a1a; margin: 0; }
+    .pix-info {
+      background: #e8f5e9;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .pix-key {
+      font-family: 'Courier New', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      display: inline-block;
+      margin: 1rem 0;
+      letter-spacing: 2px;
+      border: 2px dashed var(--primary);
+    }
+    .pix-amount {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--danger);
+    }
+    .boleto-info {
+      background: #fff3e0;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .boleto-barcode {
+      font-family: 'Courier New', monospace;
+      font-size: 1.5rem;
+      letter-spacing: 4px;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .financiamento-result {
+      background: #e3f2fd;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+    .financiamento-result .parcela {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .buttons { 
+      display: flex; 
+      gap: 1rem; 
+      margin-top: 2rem; 
+    }
+    .buttons .btn { 
+      flex: 1; 
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--danger); }
+    .toast-info { background: var(--primary); }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .valor-com-desconto {
+      color: var(--success);
+      font-weight: 700;
+    }
+    @media (max-width: 768px) {
+      .steps { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+      .steps::before { display: none; }
+      .form-row { flex-direction: column; gap: 0; }
+      .buttons { flex-direction: column; }
+      .car-info { flex-direction: column; text-align: center; }
+      .pix-key { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-compra">
+    <div class="header-compra">
+      <h1>🚗 AutoPremium</h1>
+      <p>Finalize sua compra com segurança</p>
+    </div>
+    <div class="steps">
+      <div class="step active" id="step1">
+        <div class="step-number">1</div>
+        <div class="step-label">Dados</div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-number">2</div>
+        <div class="step-label">Pagamento</div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-number">3</div>
+        <div class="step-label">Confirmação</div>
+      </div>
+    </div>
+    <div class="car-info">
+      <i class="fas fa-car"></i>
+      <div class="car-details">
+        <h2 id="carroEscolhido">Carro Selecionado</h2>
+        <div class="car-price" id="carroPreco">Preço não informado</div>
+        <div id="carroAno">Ano não informado</div>
+        <div id="carroCor" style="margin-top: 4px;">Cor não informada</div>
+      </div>
+    </div>
+    <form id="formCompra" class="form-compra" novalidate>
+      <!-- Dados Pessoais -->
+      <div class="form-group" data-field="nome">
+        <label for="nome">Nome completo <span class="required">*</span></label>
+        <input type="text" id="nome" placeholder="Digite seu nome completo" autocomplete="name" />
+        <div class="error-message" id="nomeError">Por favor, insira seu nome completo</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" data-field="email">
+          <label for="email">E-mail <span class="required">*</span></label>
+          <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" />
+          <div class="error-message" id="emailError">Insira um e-mail válido</div>
+        </div>
+        <div class="form-group" data-field="telefone">
+          <label for="telefone">Telefone <span class="required">*</span></label>
+          <input type="tel" id="telefone" placeholder="(xx) xxxxx-xxxx" autocomplete="tel" />
+          <div class="error-message" id="telefoneError">Insira um telefone válido (10 dígitos)</div>
+        </div>
+      </div>
+      <div class="form-group" data-field="cpf">
+        <label for="cpf">CPF <span class="required">*</span></label>
+        <input type="text" id="cpf" placeholder="XXX.XXX.XXX-XX" />
+        <div class="error-message" id="cpfError">Insira um CPF válido</div>
+      </div>
+
+      <!-- Forma de Pagamento -->
+      <div class="form-group" data-field="pagamento">
+        <label for="pagamento">Forma de Pagamento <span class="required">*</span></label>
+        <select id="pagamento">
+          <option value="">Selecione uma opção</option>
+          <option value="cartao">Cartão de Crédito (até 12x)</option>
+          <option value="boleto">Boleto Bancário (10% desconto)</option>
+          <option value="pix">Pix (5% desconto)</option>
+          <option value="financiamento">Financiamento (consultar)</option>
+        </select>
+        <div class="error-message" id="pagamentoError">Selecione uma forma de pagamento</div>
+      </div>
+
+      <!-- ==================== -->
+      <!-- DETALHES CARTÃO -->
+      <!-- ==================== -->
+      <div class="payment-details" id="cartaoDetails">
+        <h3><i class="fas fa-credit-card"></i> Dados do Cartão</h3>
+        <div class="form-group" data-field="cartaoNumero">
+          <label for="cartaoNumero">Número do Cartão <span class="required">*</span></label>
+          <input type="text" id="cartaoNumero" placeholder="1234 5678 9012 3456" />
+          <div class="error-message" id="cartaoNumeroError">Insira um número de cartão válido (16 dígitos)</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" data-field="cartaoValidade">
+            <label for="cartaoValidade">Validade <span class="required">*</span></label>
+            <input type="text" id="cartaoValidade" placeholder="MM/AA" />
+            <div class="error-message" id="cartaoValidadeError">Insira uma data válida (MM/AA)</div>
+          </div>
+          <div class="form-group" data-field="cartaoCVV">
+            <label for="cartaoCVV">CVV <span class="required">*</span></label>
+            <input type="text" id="cartaoCVV" placeholder="123" maxlength="4" />
+            <div class="error-message" id="cartaoCVVError">Insira um CVV válido (3 ou 4 dígitos)</div>
+          </div>
+        </div>
+        <div class="form-group" data-field="cartaoNome">
+          <label for="cartaoNome">Nome no Cartão <span class="required">*</span></label>
+          <input type="text" id="cartaoNome" placeholder="Como está impresso no cartão" />
+          <div class="error-message" id="cartaoNomeError">Insira o nome impresso no cartão</div>
+        </div>
+        <div class="form-group" data-field="cartaoParcelas">
+          <label for="cartaoParcelas">Número de Parcelas <span class="required">*</span></label>
+          <select id="cartaoParcelas">
+            <option value="1">1x sem juros</option>
+            <option value="2">2x sem juros</option>
+            <option value="3">3x sem juros</option>
+            <option value="4">4x sem juros</option>
+            <option value="5">5x sem juros</option>
+            <option value="6">6x sem juros</option>
+            <option value="7">7x sem juros</option>
+            <option value="8">8x sem juros</option>
+            <option value="9">9x sem juros</option>
+            <option value="10">10x sem juros</option>
+            <option value="11">11x sem juros</option>
+            <option value="12">12x sem juros</option>
+          </select>
+          <div class="error-message" id="cartaoParcelasError">Selecione o número de parcelas</div>
+        </div>
+        <div style="background: #e8f5e9; padding: 0.75rem 1rem; border-radius: 8px; margin-top: 0.5rem;">
+          <i class="fas fa-info-circle"></i> <strong>Valor por parcela:</strong> 
+          <span id="valorParcela">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- ==================== -->
+      <!-- DETALHES BOLETO -->
+      <!-- ==================== -->
+      <div class="payment-details" id="boletoDetails">
+        <h3><i class="fas fa-barcode"></i> Dados para Boleto</h3>
+        <div class="boleto-info">
+          <p><strong>💳 Valor com desconto de 10%</strong></p>
+          <p style="font-size: 2rem; font-weight: 700; color: var(--danger);" id="boletoValor">R$ 0,00</p>
+          <div style="margin: 1rem 0;">
+            <span class="boleto-barcode" id="boletoCodigo">00000.00000 00000.000000 00000.000000 0 00000000000000</span>
+          </div>
+          <p style="font-size: 0.9rem; color: #666;">
+            <i class="fas fa-calendar-alt"></i> Vencimento: <strong id="boletoVencimento">-</strong>
+          </p>
+          <p style="font-size: 0.8rem; color: #666;">
+            <i class="fas fa-info-circle"></i> O boleto será enviado para seu e-mail
+          </p>
+        </div>
+      </div>
+
+      <!-- ==================== -->
+      <!-- DETALHES PIX -->
+      <!-- ==================== -->
+      <div class="payment-details" id="pixDetails">
+        <h3><i class="fas fa-qrcode"></i> Pagamento via Pix</h3>
+        <div class="pix-info">
+          <p><strong>💰 Valor com desconto de 5%</strong></p>
+          <p class="pix-amount" id="pixValor">R$ 0,00</p>
+          <p style="margin: 0.5rem 0;">Chave Pix (aleatória):</p>
+          <div class="pix-key" id="pixChave">00000000-0000-0000-0000-000000000000</div>
+          <button type="button" class="btn btn-primary" onclick="copiarPix()" style="display: inline-flex; width: auto; padding: 0.5rem 1.5rem;">
+            <i class="fas fa-copy"></i> Copiar Chave
+          </button>
+          <p style="font-size: 0.8rem; color: #666; margin-top: 1rem;">
+            <i class="fas fa-clock"></i> QR Code e comprovante enviados por e-mail
+          </p>
+        </div>
+      </div>
+
+      <!-- ==================== -->
+      <!-- DETALHES FINANCIAMENTO -->
+      <!-- ==================== -->
+      <div class="payment-details" id="financiamentoDetails">
+        <h3><i class="fas fa-handshake"></i> Simulação de Financiamento</h3>
+        <div class="form-group" data-field="salario">
+          <label for="salario">Renda mensal (R$) <span class="required">*</span></label>
+          <input type="text" id="salario" placeholder="R$ 5.000,00" />
+          <div class="error-message" id="salarioError">Insira sua renda mensal</div>
+        </div>
+        <div class="form-group" data-field="entrada">
+          <label for="entrada">Valor de entrada (R$) <span class="required">*</span></label>
+          <input type="text" id="entrada" placeholder="R$ 10.000,00" />
+          <div class="error-message" id="entradaError">Insira o valor de entrada</div>
+        </div>
+        <div class="form-group" data-field="prazo">
+          <label for="prazo">Prazo (meses) <span class="required">*</span></label>
+          <select id="prazo">
+            <option value="12">12 meses</option>
+            <option value="24">24 meses</option>
+            <option value="36">36 meses</option>
+            <option value="48">48 meses</option>
+            <option value="60">60 meses</option>
+            <option value="72">72 meses</option>
+            <option value="84">84 meses</option>
+          </select>
+          <div class="error-message" id="prazoError">Selecione o prazo</div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="simularFinanciamento()" style="width: 100%;">
+          <i class="fas fa-calculator"></i> Simular Financiamento
+        </button>
+        <div class="financiamento-result" id="financiamentoResult" style="display: none;">
+          <h4>✅ Resultado da Simulação</h4>
+          <p><strong>Valor do veículo:</strong> <span id="finValorVeiculo">-</span></p>
+          <p><strong>Entrada:</strong> <span id="finEntrada">-</span></p>
+          <p><strong>Valor financiado:</strong> <span id="finValorFinanciado">-</span></p>
+          <p><strong>Parcelas:</strong> <span id="finParcelas">-</span>x de <span class="parcela" id="finValorParcela">-</span></p>
+          <p><strong>Taxa de juros:</strong> <span id="finJuros">-</span>% a.m.</p>
+          <p><strong>Total a pagar:</strong> <span id="finTotal">-</span></p>
+          <p style="color: var(--success); font-weight: 700;" id="finStatus">✅ Financiamento aprovado!</p>
+        </div>
+      </div>
+
+      <div class="payment-info" style="background: #f0f7ff; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--primary); margin: 1.5rem 0;">
+        <h3 style="color: #1a1a1a; margin: 0 0 0.5rem 0;"><i class="fas fa-info-circle"></i> Informações importantes</h3>
+        <p style="color: #1a1a1a; margin: 0;">Após confirmar, nossa equipe entrará em contato em até 24 horas para finalizar a compra.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8; color: #1a1a1a;">
+          <i class="fas fa-lock"></i> Dados protegidos com criptografia SSL
+        </p>
+      </div>
+
+      <div class="buttons">
+        <button type="submit" class="btn btn-primary" id="btnConfirmar">
+          <i class="fas fa-check-circle"></i> Confirmar Compra
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="voltar()">
+          <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+      </div>
+    </form>
+    <footer style="background: #f8f9fa; padding: 1.5rem; text-align: center; border-top: 1px solid #e9ecef;">
+      <div class="footer-logo" style="margin-bottom: 0.5rem;">
+        <img src="imag/Devlops.png" alt="Technatt Devlops" style="height: 30px; filter: none;" />
+      </div>
+      <p style="color: #1a1a1a; font-size: 0.9rem;">&copy; 2025 TechNatt</p>
+    </footer>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ============================
+      // 1. Carregar dados do carro
+      // ============================
+      const params = new URLSearchParams(window.location.search);
+      
+      let carroSalvo = null;
+      try {
+        const stored = localStorage.getItem('carroSelecionado');
+        if (stored) carroSalvo = JSON.parse(stored);
+      } catch (e) {}
+
+      const carroNome = params.get('carro') || carroSalvo?.nome || 'Nenhum carro selecionado';
+      const carroPrecoOriginal = params.get('preco') || carroSalvo?.preco || 'Preço não informado';
+      const carroAno = params.get('ano') || carroSalvo?.ano || 'Não informado';
+      const carroCor = params.get('cor') || carroSalvo?.cor || 'Não informada';
+
+      document.getElementById('carroEscolhido').textContent = carroNome;
+      document.getElementById('carroPreco').textContent = carroPrecoOriginal;
+      document.getElementById('carroAno').textContent = `Ano: ${carroAno}`;
+      document.getElementById('carroCor').textContent = `Cor: ${carroCor}`;
+
+      // Extrair valor numérico
+      const valorNumerico = parseFloat(carroPrecoOriginal.replace(/[^0-9,]/g, '').replace(',', '.')) || 0;
+      let valorComDesconto = valorNumerico;
+
+      localStorage.setItem('carroSelecionado', JSON.stringify({
+        nome: carroNome,
+        preco: carroPrecoOriginal,
+        precoNumerico: valorNumerico,
+        ano: carroAno,
+        cor: carroCor
+      }));
+
+      // ============================
+      // 2. Máscaras
+      // ============================
+      function aplicarMascaraTelefone(input) {
+        input.addEventListener('input', function(e) {
+          let value = this.value.replace(/\D/g, '');
+          if (value.length > 11) value = value.slice(0, 11);
+          let formatted = '';
+          if (value.length > 0) {
+            formatted = '(' + value.substring(0, 2);
+            if (value.length > 2) {
+              formatted += ') ' + value.substring(2, 7);
+              if (value.length > 7) {
+                formatted += '-' + value.substring(7, 11);
+              }
+            }
+          }
+          this.value = formatted;
+        });
+      }
+
+      function aplicarMascaraCPF(input) {
+        input.addEventListener('input', function(e) {
+          let value = this.value.replace(/\D/g, '');
+          if (value.length > 11) value = value.slice(0, 11);
+          let formatted = '';
+          if (value.length > 0) {
+            formatted = value.substring(0, 3);
+            if (value.length > 3) formatted += '.' + value.substring(3, 6);
+            if (value.length > 6) formatted += '.' + value.substring(6, 9);
+            if (value.length > 9) formatted += '-' + value.substring(9, 11);
+          }
+          this.value = formatted;
+        });
+      }
+
+      function aplicarMascaraCartao(input) {
+        input.addEventListener('input', function(e) {
+          let value = this.value.replace(/\D/g, '');
+          if (value.length > 16) value = value.slice(0, 16);
+          let formatted = '';
+          for (let i = 0; i < value.length; i += 4) {
+            if (i > 0) formatted += ' ';
+            formatted += value.substring(i, i + 4);
+          }
+          this.value = formatted;
+        });
+      }
+
+      function aplicarMascaraCartaoValidade(input) {
+        input.addEventListener('input', function(e) {
+          let value = this.value.replace(/\D/g, '');
+          if (value.length > 4) value = value.slice(0, 4);
+          let formatted = '';
+          if (value.length > 0) {
+            formatted = value.substring(0, 2);
+            if (value.length > 2) {
+              formatted += '/' + value.substring(2, 4);
+            }
+          }
+          this.value = formatted;
+        });
+      }
+
+      function aplicarMascaraMoeda(input) {
+        input.addEventListener('input', function(e) {
+          let value = this.value.replace(/\D/g, '');
+          if (value === '') {
+            this.value = '';
+            return;
+          }
+          let number = parseFloat(value) / 100;
+          this.value = number.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+          });
+        });
+        input.addEventListener('focus', function() {
+          if (this.value === '') {
+            this.value = 'R$ 0,00';
+          }
+          this.select();
+        });
+      }
+
+      const telefoneInput = document.getElementById('telefone');
+      const cpfInput = document.getElementById('cpf');
+      const cartaoNumero = document.getElementById('cartaoNumero');
+      const cartaoValidade = document.getElementById('cartaoValidade');
+      const salarioInput = document.getElementById('salario');
+      const entradaInput = document.getElementById('entrada');
+
+      aplicarMascaraTelefone(telefoneInput);
+      aplicarMascaraCPF(cpfInput);
+      aplicarMascaraCartao(cartaoNumero);
+      aplicarMascaraCartaoValidade(cartaoValidade);
+      aplicarMascaraMoeda(salarioInput);
+      aplicarMascaraMoeda(entradaInput);
+
+      // Máscara CVV
+      document.getElementById('cartaoCVV').addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 4);
+      });
+
+      // ============================
+      // 3. Mostrar/esconder detalhes do pagamento
+      // ============================
+      const pagamentoSelect = document.getElementById('pagamento');
+      const cartaoDetails = document.getElementById('cartaoDetails');
+      const boletoDetails = document.getElementById('boletoDetails');
+      const pixDetails = document.getElementById('pixDetails');
+      const financiamentoDetails = document.getElementById('financiamentoDetails');
+
+      pagamentoSelect.addEventListener('change', function() {
+        // Esconder todos
+        cartaoDetails.classList.remove('visible');
+        boletoDetails.classList.remove('visible');
+        pixDetails.classList.remove('visible');
+        financiamentoDetails.classList.remove('visible');
+
+        // Mostrar o selecionado
+        switch(this.value) {
+          case 'cartao':
+            cartaoDetails.classList.add('visible');
+            atualizarValorParcela();
+            break;
+          case 'boleto':
+            boletoDetails.classList.add('visible');
+            gerarBoleto();
+            break;
+          case 'pix':
+            pixDetails.classList.add('visible');
+            gerarPix();
+            break;
+          case 'financiamento':
+            financiamentoDetails.classList.add('visible');
+            break;
+        }
+      });
+
+      // ============================
+      // 4. Funções de Pagamento
+      // ============================
+      
+      // 4.1 Cartão - Atualizar valor da parcela
+      function atualizarValorParcela() {
+        const parcelas = parseInt(document.getElementById('cartaoParcelas').value) || 1;
+        const valor = valorNumerico / parcelas;
+        document.getElementById('valorParcela').textContent = valor.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+      }
+
+      document.getElementById('cartaoParcelas').addEventListener('change', atualizarValorParcela);
+
+      // 4.2 Boleto - Gerar código
+      function gerarBoleto() {
+        const desconto = valorNumerico * 0.10;
+        const valorComDesconto = valorNumerico - desconto;
+        document.getElementById('boletoValor').textContent = valorComDesconto.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+
+        // Gerar código de barras fictício
+        const codigo = gerarCodigoBarras();
+        document.getElementById('boletoCodigo').textContent = codigo;
+
+        // Data de vencimento (5 dias úteis)
+        const data = new Date();
+        let dias = 0;
+        while (dias < 5) {
+          data.setDate(data.getDate() + 1);
+          if (data.getDay() !== 0 && data.getDay() !== 6) dias++;
+        }
+        document.getElementById('boletoVencimento').textContent = data.toLocaleDateString('pt-BR');
+      }
+
+      function gerarCodigoBarras() {
+        let codigo = '';
+        for (let i = 0; i < 5; i++) {
+          if (i > 0) codigo += ' ';
+          let parte = '';
+          for (let j = 0; j < 5; j++) {
+            parte += Math.floor(Math.random() * 10);
+          }
+          codigo += parte;
+          if (i === 2) {
+            codigo += ' 0 ';
+          }
+        }
+        return codigo;
+      }
+
+      // 4.3 Pix - Gerar chave aleatória
+      function gerarPix() {
+        const desconto = valorNumerico * 0.05;
+        const valorComDesconto = valorNumerico - desconto;
+        document.getElementById('pixValor').textContent = valorComDesconto.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+
+        // Gerar chave Pix aleatória (UUID v4)
+        const chave = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+        document.getElementById('pixChave').textContent = chave;
+        window.chavePix = chave;
+      }
+
+      // 4.4 Financiamento - Simulação
+      window.simularFinanciamento = function() {
+        const salarioInput = document.getElementById('salario');
+        const entradaInput = document.getElementById('entrada');
+        const prazoSelect = document.getElementById('prazo');
+        const resultDiv = document.getElementById('financiamentoResult');
+
+        // Validar
+        let isValid = true;
+        const salario = parseFloat(salarioInput.value.replace(/[^0-9,]/g, '').replace(',', '.'));
+        const entrada = parseFloat(entradaInput.value.replace(/[^0-9,]/g, '').replace(',', '.'));
+
+        if (!salario || salario <= 0) {
+          document.getElementById('salarioError').style.display = 'block';
+          document.getElementById('salario').parentElement.classList.add('error');
+          isValid = false;
+        } else {
+          document.getElementById('salarioError').style.display = 'none';
+          document.getElementById('salario').parentElement.classList.remove('error');
+        }
+
+        if (!entrada || entrada < 0) {
+          document.getElementById('entradaError').style.display = 'block';
+          document.getElementById('entrada').parentElement.classList.add('error');
+          isValid = false;
+        } else {
+          document.getElementById('entradaError').style.display = 'none';
+          document.getElementById('entrada').parentElement.classList.remove('error');
+        }
+
+        if (!isValid) {
+          exibirToast('Preencha os campos de renda e entrada corretamente.', 'error');
+          return;
+        }
+
+        const prazo = parseInt(prazoSelect.value);
+        const valorFinanciado = valorNumerico - entrada;
+        const taxaJuros = 1.5 + (prazo / 100); // Taxa crescente com o prazo
+        const jurosMensal = taxaJuros / 100;
+        
+        // Cálculo da parcela (PRICE)
+        const parcela = valorFinanciado * (jurosMensal * Math.pow(1 + jurosMensal, prazo)) / (Math.pow(1 + jurosMensal, prazo) - 1);
+        const total = parcela * prazo;
+
+        // Verificar se o financiamento é aprovado (parcela <= 30% da renda)
+        const limiteParcela = salario * 0.30;
+        const aprovado = parcela <= limiteParcela && entrada >= valorNumerico * 0.10;
+
+        // Exibir resultados
+        document.getElementById('finValorVeiculo').textContent = valorNumerico.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+        document.getElementById('finEntrada').textContent = entrada.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+        document.getElementById('finValorFinanciado').textContent = valorFinanciado.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+        document.getElementById('finParcelas').textContent = prazo;
+        document.getElementById('finValorParcela').textContent = parcela.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+        document.getElementById('finJuros').textContent = taxaJuros.toFixed(2);
+        document.getElementById('finTotal').textContent = total.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+
+        const statusEl = document.getElementById('finStatus');
+        if (aprovado) {
+          statusEl.textContent = '✅ Financiamento aprovado!';
+          statusEl.style.color = 'var(--success)';
+          exibirToast('Financiamento aprovado! 🎉', 'success');
+        } else {
+          statusEl.textContent = '❌ Financiamento não aprovado. Considere dar uma entrada maior ou aumentar o prazo.';
+          statusEl.style.color = 'var(--danger)';
+          exibirToast('Financiamento não aprovado. Tente ajustar os valores.', 'error');
+        }
+
+        resultDiv.style.display = 'block';
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
+      // ============================
+      // 5. Validações
+      // ============================
+      function validarEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      function validarCPF(cpf) {
+        const numeros = cpf.replace(/\D/g, '');
+        if (numeros.length !== 11) return false;
+        if (/^(\d)\1+$/.test(numeros)) return false;
+        let soma = 0;
+        for (let i = 0; i < 9; i++) {
+          soma += parseInt(numeros.charAt(i)) * (10 - i);
+        }
+        let resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(numeros.charAt(9))) return false;
+        soma = 0;
+        for (let i = 0; i < 10; i++) {
+          soma += parseInt(numeros.charAt(i)) * (11 - i);
+        }
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        return resto === parseInt(numeros.charAt(10));
+      }
+
+      function validarTelefone(telefone) {
+        const numeros = telefone.replace(/\D/g, '');
+        return numeros.length >= 10 && numeros.length <= 11;
+      }
+
+      function validarCartao(numero) {
+        const numeros = numero.replace(/\D/g, '');
+        return numeros.length === 16;
+      }
+
+      function validarValidade(validade) {
+        const numeros = validade.replace(/\D/g, '');
+        if (numeros.length !== 4) return false;
+        const mes = parseInt(numeros.substring(0, 2));
+        const ano = parseInt(numeros.substring(2, 4));
+        if (mes < 1 || mes > 12) return false;
+        const dataAtual = new Date();
+        const anoAtual = dataAtual.getFullYear() % 100;
+        const mesAtual = dataAtual.getMonth() + 1;
+        return (ano > anoAtual) || (ano === anoAtual && mes >= mesAtual);
+      }
+
+      function validarCVV(cvv) {
+        return cvv.replace(/\D/g, '').length >= 3 && cvv.replace(/\D/g, '').length <= 4;
+      }
+
+      // ============================
+      // 6. Validação em tempo real
+      // ============================
+      const form = document.getElementById('formCompra');
+
+      function validateField(fieldId) {
+        const el = document.getElementById(fieldId);
+        const group = el?.closest('.form-group');
+        if (!group) return false;
+
+        let isValid = true;
+        const value = el.value.trim();
+
+        switch(fieldId) {
+          case 'nome':
+            isValid = value !== '' && value.split(' ').length >= 2;
+            break;
+          case 'email':
+            isValid = validarEmail(value);
+            break;
+          case 'telefone':
+            isValid = validarTelefone(value);
+            break;
+          case 'cpf':
+            isValid = validarCPF(value);
+            break;
+          case 'pagamento':
+            isValid = value !== '';
+            break;
+          case 'cartaoNumero':
+            isValid = validarCartao(value);
+            break;
+          case 'cartaoValidade':
+            isValid = validarValidade(value);
+            break;
+          case 'cartaoCVV':
+            isValid = validarCVV(value);
+            break;
+          case 'cartaoNome':
+            isValid = value !== '' && value.split(' ').length >= 2;
+            break;
+          case 'cartaoParcelas':
+            isValid = value !== '';
+            break;
+          case 'salario':
+            const salarioNum = parseFloat(value.replace(/[^0-9,]/g, '').replace(',', '.'));
+            isValid = !isNaN(salarioNum) && salarioNum > 0;
+            break;
+          case 'entrada':
+            const entradaNum = parseFloat(value.replace(/[^0-9,]/g, '').replace(',', '.'));
+            isValid = !isNaN(entradaNum) && entradaNum >= 0;
+            break;
+          default:
+            isValid = true;
+        }
+
+        if (!isValid) {
+          group.classList.add('error');
+          group.classList.remove('success');
+        } else {
+          group.classList.remove('error');
+          group.classList.add('success');
+        }
+        return isValid;
+      }
+
+      // Adicionar validação para todos os campos
+      const allFields = ['nome', 'email', 'telefone', 'cpf', 'pagamento', 
+        'cartaoNumero', 'cartaoValidade', 'cartaoCVV', 'cartaoNome', 'cartaoParcelas',
+        'salario', 'entrada'];
+
+      allFields.forEach(fieldId => {
+        const el = document.getElementById(fieldId);
+        if (!el) return;
+        el.addEventListener('blur', function() {
+          validateField(fieldId);
+        });
+        el.addEventListener('input', function() {
+          const group = this.closest('.form-group');
+          if (group?.classList.contains('error')) {
+            validateField(fieldId);
+          }
+        });
+      });
+
+      // ============================
+      // 7. Toast notifications
+      // ============================
+      function exibirToast(mensagem, tipo = 'success') {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${tipo}`;
+        toast.innerHTML = `<i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'info' ? 'info-circle' : 'exclamation-circle'}"></i> ${mensagem}`;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(100%)';
+          toast.style.transition = 'all 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      // ============================
+      // 8. Função copiar Pix
+      // ============================
+      window.copiarPix = function() {
+        const chave = document.getElementById('pixChave').textContent;
+        navigator.clipboard.writeText(chave).then(() => {
+          exibirToast('Chave Pix copiada! 📋', 'success');
+        }).catch(() => {
+          // Fallback
+          const range = document.createRange();
+          range.selectNode(document.getElementById('pixChave'));
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          document.execCommand('copy');
+          exibirToast('Chave Pix copiada! 📋', 'success');
+        });
+      };
+
+      // ============================
+      // 9. Envio do formulário
+      // ============================
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Validar campos básicos
+        const basicFields = ['nome', 'email', 'telefone', 'cpf', 'pagamento'];
+        let allValid = true;
+        basicFields.forEach(fieldId => {
+          if (!validateField(fieldId)) {
+            allValid = false;
+          }
+        });
+
+        // Validar campos específicos do pagamento
+        const pagamento = document.getElementById('pagamento').value;
+        let paymentValid = true;
+
+        switch(pagamento) {
+          case 'cartao':
+            const cartaoFields = ['cartaoNumero', 'cartaoValidade', 'cartaoCVV', 'cartaoNome', 'cartaoParcelas'];
+            cartaoFields.forEach(fieldId => {
+              if (!validateField(fieldId)) {
+                paymentValid = false;
+                allValid = false;
+              }
+            });
+            break;
+          case 'financiamento':
+            const finFields = ['salario', 'entrada'];
+            finFields.forEach(fieldId => {
+              if (!validateField(fieldId)) {
+                paymentValid = false;
+                allValid = false;
+              }
+            });
+            // Verificar se já simulou
+            const resultDiv = document.getElementById('financiamentoResult');
+            if (resultDiv.style.display === 'none') {
+              exibirToast('Por favor, faça a simulação do financiamento primeiro.', 'error');
+              allValid = false;
+              paymentValid = false;
+            }
+            break;
+          case 'boleto':
+          case 'pix':
+            // Não precisa validar mais nada
+            break;
+          default:
+            exibirToast('Selecione uma forma de pagamento.', 'error');
+            allValid = false;
+        }
+
+        if (!allValid) {
+          exibirToast('Por favor, preencha todos os campos corretamente.', 'error');
+          const firstError = document.querySelector('.form-group.error');
+          if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const input = firstError.querySelector('input, select');
+            if (input) input.focus();
+          }
+          return;
+        }
+
+        // Coletar dados
+        const dados = {
+          nome: document.getElementById('nome').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          telefone: document.getElementById('telefone').value.trim(),
+          cpf: document.getElementById('cpf').value.trim(),
+          pagamento: document.getElementById('pagamento').value,
+          carro: carroNome,
+          preco: carroPrecoOriginal,
+          precoNumerico: valorNumerico,
+          ano: carroAno,
+          cor: carroCor,
+          data: new Date().toISOString(),
+          detalhes: {}
+        };
+
+        // Adicionar detalhes específicos
+        switch(pagamento) {
+          case 'cartao':
+            dados.detalhes = {
+              parcelas: document.getElementById('cartaoParcelas').value,
+              valorParcela: (valorNumerico / parseInt(document.getElementById('cartaoParcelas').value)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+              ultimosDigitos: document.getElementById('cartaoNumero').value.replace(/\D/g, '').slice(-4)
+            };
+            break;
+          case 'boleto':
+            dados.detalhes = {
+              codigo: document.getElementById('boletoCodigo').textContent,
+              vencimento: document.getElementById('boletoVencimento').textContent,
+              valorComDesconto: (valorNumerico * 0.90).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            };
+            break;
+          case 'pix':
+            dados.detalhes = {
+              chavePix: document.getElementById('pixChave').textContent,
+              valorComDesconto: (valorNumerico * 0.95).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            };
+            break;
+          case 'financiamento':
+            const entrada = parseFloat(document.getElementById('entrada').value.replace(/[^0-9,]/g, '').replace(',', '.'));
+            const prazo = parseInt(document.getElementById('prazo').value);
+            const valorFinanciado = valorNumerico - entrada;
+            dados.detalhes = {
+              entrada: entrada.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+              prazo: prazo,
+              valorFinanciado: valorFinanciado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+              parcela: document.getElementById('finValorParcela').textContent,
+              total: document.getElementById('finTotal').textContent,
+              aprovado: document.getElementById('finStatus').textContent.includes('aprovado')
+            };
+            break;
+        }
+
+        // Salvar dados
+        localStorage.setItem('dadosCompra', JSON.stringify(dados));
+
+        // Mostrar loading
+        const btn = document.getElementById('btnConfirmar');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+        btn.disabled = true;
+        btn.classList.add('btn-loading');
+
+        // Atualizar steps
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step1').classList.add('completed');
+        document.getElementById('step2').classList.add('active');
+
+        setTimeout(() => {
+          document.getElementById('step2').classList.remove('active');
+          document.getElementById('step2').classList.add('completed');
+          document.getElementById('step3').classList.add('active');
+
+          setTimeout(() => {
+            const params = new URLSearchParams({
+              carro: dados.carro,
+              preco: dados.preco,
+              ano: dados.ano,
+              cor: dados.cor,
+              nome: dados.nome,
+              email: dados.email,
+              telefone: dados.telefone,
+              cpf: dados.cpf,
+              pagamento: dados.pagamento,
+              detalhes: JSON.stringify(dados.detalhes)
+            });
+            window.location.href = `nota.html?${params.toString()}`;
+          }, 500);
+        }, 1500);
+      });
+
+      // ============================
+      // 10. Botão voltar
+      // ============================
+      window.voltar = function() {
+        const confirmacao = confirm('Tem certeza que deseja voltar? Os dados preenchidos serão perdidos.');
+        if (confirmacao) {
+          window.location.href = 'car.html';
+        }
+      };
+
+      // ============================
+      // 11. Inicializar
+      // ============================
+      // Carregar dados salvos
+      try {
+        const dadosSalvos = localStorage.getItem('dadosCompra');
+        if (dadosSalvos) {
+          const dados = JSON.parse(dadosSalvos);
+          const campos = ['nome', 'email', 'telefone', 'cpf'];
+          campos.forEach(campo => {
+            const el = document.getElementById(campo);
+            if (el && dados[campo]) {
+              el.value = dados[campo];
+              setTimeout(() => validateField(campo), 100);
+            }
+          });
+        }
+      } catch (e) {}
+
+      console.log('🚗 AutoPremium - Página de compra carregada com sucesso!');
+      console.log('💰 Valor do veículo:', valorNumerico.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+    })();
+  </script>
+</body>
+</html>

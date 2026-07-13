@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoPremium - Encontre seu carro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#3498db" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="AutoPremium" />
+  <link rel="apple-touch-icon" href="./icons/icon-152x152.png" />
+</head>
+
+<body>
+  <header class="hero" role="banner">
+    <div class="hero-content">
+      <h1>AutoPremium</h1>
+      <p>Encontre o carro dos seus sonhos com qualidade e preço justo</p>
+      <div class="search-box">
+        <input type="text" id="quickSearch" placeholder="Digite um modelo ou marca..." aria-label="Buscar carro" />
+        <button onclick="buscarRapido()" aria-label="Pesquisar"><i class="fas fa-search"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main role="main">
+    <section class="welcome-card" aria-labelledby="welcome-title">
+      <h2 id="welcome-title">Seja Bem-vindo</h2>
+      <h3>A melhor loja de carros</h3>
+      <p>
+        Na AutoPremium, oferecemos uma seleção exclusiva de veículos novos e seminovos, com garantia de procedência e as
+        melhores condições de pagamento. Nossa equipe especializada está pronta para ajudá-lo a encontrar o carro
+        perfeito para suas necessidades.
+      </p>
+      <div class="btn-group">
+        <button id="loja" class="btn btn-primary">Ver os carros</button>
+        <button id="fechar" class="btn btn-secondary">Fechar site</button>
+      </div>
+      <button id="installBtn" class="btn btn-success install-btn" style="display:none;">
+        <i class="fas fa-download"></i> Instalar App
+      </button>
+    </section>
+
+    <section class="features" aria-label="Diferenciais">
+      <div class="feature-card">
+        <i class="fas fa-car feature-icon"></i>
+        <h4>Variedade de Veículos</h4>
+        <p>O mercado automotivo oferece uma ampla variedade de veículos para atender diferentes perfis de motoristas,
+          desde quem busca economia no dia a dia até quem prioriza desempenho, conforto e tecnologia.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-shield-alt feature-icon"></i>
+        <h4>Garantia de Qualidade</h4>
+        <p>Todos os nossos veículos passam por uma rigorosa inspeção antes da venda, assegurando que cada cliente leve
+          para casa um carro confiável e seguro.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-hand-holding-usd feature-icon"></i>
+        <h4>Melhores Condições</h4>
+        <p>Facilidade na Compra do Seu Veículo. Trabalhamos com financiamento facilitado e diversas opções de pagamento
+          que cabem no seu bolso.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+
+    <p>Entre em contato:</p>
+    <div class="contact-info">
+      <a href="https://wa.me/5531984924415" class="contact-item"><i class="fab fa-whatsapp"></i> (31) 9 8492-4415</a>
+      <a href="https://instagram.com/Natanael46gelan" class="contact-item"><i class="fab fa-instagram"></i>
+        @Natanael46gelan</a>
+      <a href="mailto:natanaellucasmiranda@gmail.com" class="contact-item"><i class="fas fa-envelope"></i>
+        natanaellucasmiranda@gmail.com</a>
+    </div>
+    <div class="footer-logo">
+      <img src="imag/Devlops.png" alt="Technatt Devlops" />
+    </div>
+    <p class="copyright">&copy; 2025 TechNatt</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // Redirecionamentos e PWA
+    document.getElementById("loja").addEventListener("click", () => window.location.href = "car.html");
+    document.getElementById("fechar").addEventListener("click", () => {
+      if (confirm("Tem certeza que deseja sair?")) window.location.href = "adeus.html";
+    });
+
+    function buscarRapido() {
+      const termo = document.getElementById('quickSearch').value.trim();
+      if (termo) window.location.href = `car.html?busca=${encodeURIComponent(termo)}`;
+    }
+
+    // Instalação PWA
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('installBtn');
+      btn.style.display = 'inline-block';
+      btn.onclick = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') btn.style.display = 'none';
+          deferredPrompt = null;
+        }
+      };
+    });
+    window.addEventListener('appinstalled', () => {
+      document.getElementById('installBtn').style.display = 'none';
+      exibirToast('App instalado com sucesso!', 'success');
+    });
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW registrado:', reg.scope))
+        .catch(err => console.log('Falha no SW:', err));
+    }
+  </script>
+</body>
+
+</html>
